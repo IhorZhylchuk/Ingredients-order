@@ -5,14 +5,11 @@ using System.Threading.Tasks;
 
 namespace Ingredients_order.Models
 {
-    public class Ingredient
+    public class Ingredient:Default
     {
-        public int Id { get; set; }
+        public override int Id { get; set; }
         public int MaterialNumber { get; set; }
-        public string Name { get; set; }
-       // public double Amount { get; set; }
-       // public string Value { get; set; }
-       // public int RecipeId { get; set; }
-        //public Recipe Recipe { get; set; }
+        public override string Name { get; set; }
+
     }
 }

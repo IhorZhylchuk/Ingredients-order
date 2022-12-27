@@ -23,6 +23,12 @@
     .modal-backdrop {
         opacity: 0.01 !important;
     }
+    #alertModal.fade #dialog.modal-dialog {
+        transform: translate3d(0, 100vh, 0);
+    }
+    #alertModal.show #dialog.modal-dialog {
+        transform: translate3d(0, -10vh, 0);
+    }
 </style>
 <header>
 
@@ -62,6 +68,7 @@
         <div class="form-group">
             <a style="margin-bottom: 10px; color: white" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#zlecenie">Dodaj zlecenie</a>
         </div>
+
         <div class="form-group">
             <table id="zlecenia" class="table table-striped table-bordered display" style="width:100%;margin-top:50px;">
                 <thead>
@@ -69,19 +76,19 @@
                         <th style="text-align: center"></th>
                         <th id="valueBinNumber">Nr. zlecenia</th>
                         <th id="valueBinStatus">Nazwa produktu</th>
-                        <th id="processName">Ilość</th>
+                        <th id="processName">Ilość (kg)</th>
                         <th></th>
                     </tr>
                 </thead>
             </table>
         </div>
     </div>
-    <div class="modal fade" id="zlecenie" tabindex="-1" aria-labelledby="title" aria-hidden="true">
+    <div class="modal fade" id="zlecenie" backdrop="static" keyboard="false" tabindex="-1" aria-labelledby="title" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="title">Nowe zlecenie</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="closeZlecenie" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="closeNewZlecenie" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form asp-action="NoweZlecenie" method="Post" id="noweZlecenie">
@@ -121,13 +128,67 @@
                             </div>
 
                         </div>
-
                     </form>
                 </div>
             </div>
         </div>
     </div>
+    <div class="modal fade" id="details" backdrop="static" keyboard="false" tabindex="-1" aria-labelledby="title" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="title">Szczegóły zlecenia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="Reset($('#numerMaterialu'))" id="closeZlecenie" aria-label="Close"></button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <form id="zlecenieDetails">
+
+                        <div class="modal-body">
+
+                            <div class="form-group">
+                                <span>Numer zlecenia:</span>
+                                <input class="form-control" readonly id="detailsNrZlecenia" />
+                            </div>
+                            <div class="form-group">
+                                <span>Receptura:</span>
+                                <input class="form-control" readonly id="detailsReceptura" />
+                            </div>
+                            <div class="form-group">
+                                <span>Ilość:</span>
+                                <input id="totalCount" class="form-control" readonly />
+
+                            </div>
+                            <div class="form-group" id="surowce">
+                                <span>Surowce:</span>
+                                <table class="table table-bordered table-hover" id="tableSurowce">
+                                    <tbody id="numerMaterialu">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal modal-footer fade" id="alertModal" style="width:100%;height:min-content;float:right !important" tabindex="-1" aria-labelledby="title" aria-hidden="true">
+                            <div class="modal-dialog" style="position:fixed;bottom:0;right:0;margin:0;" id="dialog">
+                                <div class="modal-content">
+
+                                    <div class="modal-body">
+                                        <p style="text-align: center; color: green; ">Copied</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
 </main>
+
 
 
 
@@ -142,6 +203,7 @@
 
     <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.21/js/dataTables.jqueryui.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         var regExp = /[0-9][0-9][0-9][0-9][0-9][0-9][0-9]/;
@@ -149,6 +211,12 @@
         var number = document.getElementById('numberCount');
         var num = 1;
         $(document).ready(function () {
+            $('#zlecenie').modal({ backdrop: 'static', keyboard: false });
+            $('#details').modal({ backdrop: 'static', keyboard: false });
+            $('#closeNewZlecenie').click(function () {
+                document.getElementById('noweZlecenie').reset();
+            })
+            $('#numerMaterialu').append("<tr><td></td><td></td></tr>");
             daTable = $('#zlecenia').DataTable({
                 dom: 'Bfrtip',
                 ajax: {
@@ -191,7 +259,7 @@
 
                     {
                         data: "id", "render": function (data) {
-                            return "<div style='width:100%; position: center'><div class='btn-group' role='group' id='groupButton'><a id='code' class='btn btn-warning btn-small' onclick='GenerateCode(" + data + ")' style='height:5%'>Bar code</a ><a class='btn btn-success btn-small' style = 'height: 5%; margin-left: 5px; margin-right: 5px;' data-toggle='modal' onclick='Details(" + data + ")'>Details</a><a class='btn btn-danger btn-small' style='height: 5 %' onclick=Delete(" + data + ") id='Delete' >Remove bin</a></div ></div >"
+                            return "<div style='width:100%; position: center'><div class='btn-group' role='group' id='groupButton'><a class='btn btn-success btn-small' style = 'height: 5%; margin-left: 5px; margin-right: 5px;' data-toggle='modal' onclick='Details(" + data + ")'>Szczegóły</a><a class='btn btn-danger btn-small' style='height: 5 %' onclick=Delete(" + data + ") id='Delete' >Usuń zlecenie</a></div ></div >"
                         },
                         orderable: false,
                         searchable: false,
@@ -204,14 +272,6 @@
                     cell.innerHTML = i + 1;
                 });
             }).draw();
-            $('#zlecenie').modal({ backdrop: 'static', keyboard: false });
-            $('#closeZlecenie').on('click', function () {
-                document.getElementById("nrZlecenia").value = '';
-                document.getElementById("count").value = '';
-                document.getElementById("recipies").value = '';
-                $('#warning').text("");
-
-            })
             document.getElementById('nrZlecenia').addEventListener('keyup', function () {
                 $.ajax({
                     type: 'Get',
@@ -227,6 +287,9 @@
                 })
             });
         })
+        function Reset(input) {
+            input.empty();
+        }
         function Add(input) {
             var opakowania = new Array();
                 $.ajax({
@@ -339,6 +402,51 @@
                 document.getElementById('naklejka').hidden = true;
                 input.value = value - 1;
             }
+        }
+        function Details(id) {
+           
+            $.ajax({
+                type: 'Get',
+                url: '/Home/Details/' + id,
+                success: function (data) {
+                    $('#details').modal('show');
+                    $('#detailsNrZlecenia').val(data['details']['nrZlecenia']);
+                    $('#detailsReceptura').val(data['details']['recipesName']);
+                    $('#totalCount').val(data['details']['count']);
+                    /*
+                    for (var i = 0; i < data['opakowania'].length; i++) {
+                        $('#numerMaterialu').append("<tr><td id='matNumber_" + i + "' onclick='Copy($(this))'>" + data['opakowania'][i]['materialNumber'] + "</td><td>" + data['opakowania'][i]['name'] + "</td></tr>");
+                    }
+                    for (var i = 0; i < data['ingredients'].length; i++) {
+                        $('#numerMaterialu').append("<tr><td id='matNumber__" + i + "' onclick='Copy($(this))'>" + data['ingredients'][i]['materialNumber'] + "</td><td>" + data['ingredients'][i]['name'] + "</td></tr>");
+                    }
+                   */
+
+                    $.each(data['items'], function (index, value) {
+                        if (data['items'][index]['item1'] != 0) {
+                            $('#numerMaterialu').append("<tr><td id='matNumber_" + index + "' onclick='Copy($(this))'>" + data['items'][index]['item1'] + "</td><td>" + data['items'][index]['item2'] +
+                                "</td><td>" + data['items'][index]['item3'] + "</td></tr>");
+                            
+                        }
+
+                    })
+                    $.each(data['opakowania'], function (index, value) {
+                        $('#numerMaterialu').append("<tr><td id='matNumber__" + index + "' onclick='Copy($(this))'>" + data['opakowania'][index]['materialNumber'] + "</td><td>" + data['opakowania'][index]['name'] + "</td></tr>");
+                    })
+                    if (data['items'][index]['item1'] == 0) {
+                        $('#numerMaterialu').append("<tr><td>" + '-' + "</td><td>" + data['items'][index]['item2'] + "</td><td>" + data['items'][index]['item3'] + "</td></tr>");
+                    }
+                }
+            })
+        }
+        function Copy(input) {
+            var result = input.select();
+            navigator.clipboard.writeText(result.text());
+            $('#alertModal').modal('show');
+            setTimeout(function () {
+                $('#alertModal').modal('hide');
+            }, 1500);
+
         }
 
     </script>

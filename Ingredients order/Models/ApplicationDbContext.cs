@@ -11,7 +11,9 @@ namespace Ingredients_order.Models
         public DbSet<Recipe> Recipes { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<Relation> Relations { get; set; }
+        public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<Opakowania> Opakowania { get; set; }
+        public DbSet<ItemsCount> ItemsCount { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> dbContext) : base(dbContext)
         {
            

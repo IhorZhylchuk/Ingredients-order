@@ -6,19 +6,23 @@ using System.Threading.Tasks;
 
 namespace Ingredients_order.Models
 {
-    public class Recipe
+    public class Recipe:Default
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-
-
-       // public ICollection<Ingredient> Ingredients { get; set;}
-        //[NotMapped]
-        //public List<double> Amount { get; set; }
+       
+        public override int Id { get; set; }
+        public override string Name { get; set; }
     }
-    public class Opakowania
+    public class Opakowania: Default
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
+        public override int Id { get; set; }
+        public override string Name { get; set; }
+        public  int MaterialNumber { get; set; }
+        public double Capacity { get; set; }
+    }
+    public abstract class Default
+    {
+        public abstract int Id { get; set; }
+        public abstract string Name { get; set; }
+
     }
 }

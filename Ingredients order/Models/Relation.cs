@@ -11,9 +11,6 @@ namespace Ingredients_order.Models
         public int IngredientsId { get; set; }
         public int RecipeId { get; set; }
         public double Amount { get; set; }
-        public string Opakowanie { get; set; }
-        public string WieczkoNakrętka { get; set; }
-        public string Folia { get; set; }
-        public string Etykieta { get; set; }
+
     }
 }

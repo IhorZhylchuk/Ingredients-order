@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ingredients_order.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221224232441_Initial-1")]
-    partial class Initial1
+    [Migration("20221227231539_Iniitla_1")]
+    partial class Iniitla_1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -35,7 +35,7 @@ namespace Ingredients_order.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Ingredient");
+                    b.ToTable("Ingredients");
 
                     b.HasData(
                         new
@@ -109,6 +109,18 @@ namespace Ingredients_order.Migrations
                             Id = 12,
                             MaterialNumber = 4416630,
                             Name = "Aromat waniliowy"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            MaterialNumber = 0,
+                            Name = "Woda"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            MaterialNumber = 4409530,
+                            Name = "Syrop glukozowy"
                         });
                 });
 
@@ -121,6 +133,15 @@ namespace Ingredients_order.Migrations
 
                     b.Property<double>("Count")
                         .HasColumnType("float");
+
+                    b.Property<int>("IlośćNaklejek")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IlośćOpakowań")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IlośćPokrywNekrętek")
+                        .HasColumnType("int");
 
                     b.Property<string>("Naklejka")
                         .HasColumnType("nvarchar(max)");
@@ -145,12 +166,39 @@ namespace Ingredients_order.Migrations
                     b.ToTable("Items");
                 });
 
+            modelBuilder.Entity("Ingredients_order.Models.ItemsCount", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<double>("IngredientCount")
+                        .HasColumnType("float");
+
+                    b.Property<int>("IngredientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ItemsCount");
+                });
+
             modelBuilder.Entity("Ingredients_order.Models.Opakowania", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<double>("Capacity")
+                        .HasColumnType("float");
+
+                    b.Property<int>("MaterialNumber")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -163,51 +211,71 @@ namespace Ingredients_order.Migrations
                         new
                         {
                             Id = 1,
+                            Capacity = 1.0,
+                            MaterialNumber = 4439904,
                             Name = "Butelka czarna 1 kg"
                         },
                         new
                         {
                             Id = 2,
+                            Capacity = 10.0,
+                            MaterialNumber = 4477398,
                             Name = "Wiadro białe 10 kg"
                         },
                         new
                         {
                             Id = 3,
+                            Capacity = 3.2000000000000002,
+                            MaterialNumber = 4033456,
                             Name = "Wiadro czerwone 3.2 kg"
                         },
                         new
                         {
                             Id = 4,
+                            Capacity = 0.0,
+                            MaterialNumber = 4499540,
                             Name = "Nakrentka RD50"
                         },
                         new
                         {
                             Id = 5,
+                            Capacity = 0.0,
+                            MaterialNumber = 4432324,
                             Name = "Wieczko niebeiske średnica 18 cm (3.2 kg)"
                         },
                         new
                         {
                             Id = 6,
+                            Capacity = 0.0,
+                            MaterialNumber = 4466950,
                             Name = "Wieczko białe średnica 32 cm (10 kg)"
                         },
                         new
                         {
                             Id = 7,
+                            Capacity = 0.0,
+                            MaterialNumber = 4436904,
                             Name = "Naklejka 100x100 biała"
                         },
                         new
                         {
                             Id = 8,
+                            Capacity = 0.0,
+                            MaterialNumber = 4410932,
                             Name = "Naklejka Truskawka w żelu 3.2 kg"
                         },
                         new
                         {
                             Id = 9,
+                            Capacity = 0.0,
+                            MaterialNumber = 4490437,
                             Name = "Naklejka Wiśnia w żelu 3.2 kg"
                         },
                         new
                         {
                             Id = 10,
+                            Capacity = 0.0,
+                            MaterialNumber = 4400475,
                             Name = "Naklejka Sos Krówka 1 kg"
                         });
                 });
@@ -259,23 +327,11 @@ namespace Ingredients_order.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<string>("Etykieta")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Folia")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("IngredientsId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Opakowanie")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("RecipeId")
                         .HasColumnType("int");
-
-                    b.Property<string>("WieczkoNakrętka")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -285,21 +341,21 @@ namespace Ingredients_order.Migrations
                         new
                         {
                             Id = 1,
-                            Amount = 180.0,
+                            Amount = 162.0,
                             IngredientsId = 1,
                             RecipeId = 1
                         },
                         new
                         {
                             Id = 2,
-                            Amount = 250.0,
+                            Amount = 430.0,
                             IngredientsId = 2,
                             RecipeId = 1
                         },
                         new
                         {
                             Id = 3,
-                            Amount = 0.29999999999999999,
+                            Amount = 1.3,
                             IngredientsId = 3,
                             RecipeId = 1
                         },
@@ -320,106 +376,141 @@ namespace Ingredients_order.Migrations
                         new
                         {
                             Id = 6,
+                            Amount = 400.0,
+                            IngredientsId = 13,
+                            RecipeId = 1
+                        },
+                        new
+                        {
+                            Id = 7,
                             Amount = 300.0,
                             IngredientsId = 1,
                             RecipeId = 2
                         },
                         new
                         {
-                            Id = 7,
-                            Amount = 30.0,
+                            Id = 8,
+                            Amount = 42.0,
                             IngredientsId = 4,
                             RecipeId = 2
                         },
                         new
                         {
-                            Id = 8,
+                            Id = 9,
                             Amount = 530.0,
                             IngredientsId = 6,
                             RecipeId = 2
                         },
                         new
                         {
-                            Id = 9,
+                            Id = 10,
                             Amount = 2.7000000000000002,
                             IngredientsId = 7,
                             RecipeId = 2
                         },
                         new
                         {
-                            Id = 10,
+                            Id = 11,
                             Amount = 5.0999999999999996,
                             IngredientsId = 8,
                             RecipeId = 2
                         },
                         new
                         {
-                            Id = 11,
-                            Amount = 270.0,
+                            Id = 12,
+                            Amount = 120.0,
+                            IngredientsId = 13,
+                            RecipeId = 2
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Amount = 230.0,
                             IngredientsId = 1,
                             RecipeId = 3
                         },
                         new
                         {
-                            Id = 12,
+                            Id = 14,
                             Amount = 4.2000000000000002,
                             IngredientsId = 4,
                             RecipeId = 3
                         },
                         new
                         {
-                            Id = 13,
-                            Amount = 700.0,
+                            Id = 15,
+                            Amount = 570.0,
                             IngredientsId = 9,
                             RecipeId = 3
                         },
                         new
                         {
-                            Id = 14,
-                            Amount = 52.0,
+                            Id = 16,
+                            Amount = 40.0,
                             IngredientsId = 7,
                             RecipeId = 3
                         },
                         new
                         {
-                            Id = 15,
+                            Id = 17,
                             Amount = 6.0999999999999996,
                             IngredientsId = 10,
                             RecipeId = 3
                         },
                         new
                         {
-                            Id = 16,
+                            Id = 18,
                             Amount = 150.0,
+                            IngredientsId = 13,
+                            RecipeId = 3
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Amount = 340.0,
                             IngredientsId = 1,
                             RecipeId = 4
                         },
                         new
                         {
-                            Id = 17,
+                            Id = 20,
                             Amount = 3.6000000000000001,
                             IngredientsId = 4,
                             RecipeId = 4
                         },
                         new
                         {
-                            Id = 18,
-                            Amount = 0.69999999999999996,
+                            Id = 21,
+                            Amount = 4.7000000000000002,
                             IngredientsId = 11,
                             RecipeId = 4
                         },
                         new
                         {
-                            Id = 19,
-                            Amount = 25.0,
+                            Id = 22,
+                            Amount = 120.0,
                             IngredientsId = 7,
                             RecipeId = 4
                         },
                         new
                         {
-                            Id = 20,
+                            Id = 23,
                             Amount = 5.2000000000000002,
                             IngredientsId = 12,
+                            RecipeId = 4
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Amount = 250.0,
+                            IngredientsId = 13,
+                            RecipeId = 4
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Amount = 276.5,
+                            IngredientsId = 14,
                             RecipeId = 4
                         });
                 });
