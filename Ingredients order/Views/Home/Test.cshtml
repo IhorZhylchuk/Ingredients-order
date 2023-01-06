@@ -1,281 +1,407 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿
 @{
+    ViewData["Title"] = "Home Page";
+    var opakowania = ViewBag.Opakowania;
+
 }
-<link href="~/css/test.css" rel="stylesheet" />
+<link href="~/css/site.css" rel="stylesheet" />
 <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.2/css/bootstrapValidator.min.css" />
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <title>Material Design for Bootstrap</title>
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
-    <!-- Google Fonts Roboto -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
-    <!-- MDB -->
-    <link href="~/mdb/mdb.min.css" rel="stylesheet" />
-    <!-- Custom styles -->
-    <link rel="stylesheet" href="css/style.css" />
-</head>
-<body>
-    <!--Main Navigation-->
-    <header>
-        <!-- Sidebar -->
-        <nav id="sidebarMenu"
-             class="collapse d-lg-block sidebar collapse bg-white">
-            <div class="position-sticky">
-                <div class="list-group list-group-flush mx-3 mt-4">
-                    <a href="#"
-                       class="list-group-item list-group-item-action py-2 ripple"
-                       aria-current="true">
-                        <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Main dashboard</span>
-                    </a>
-                    <a href="#"
-                       class="list-group-item list-group-item-action py-2 ripple active">
-                        <i class="fas fa-chart-area fa-fw me-3"></i><span>Webiste traffic</span>
-                    </a>
-                    <a href="#"
-                       class="list-group-item list-group-item-action py-2 ripple"><i class="fas fa-lock fa-fw me-3"></i><span>Password</span></a>
-                    <a href="#"
-                       class="list-group-item list-group-item-action py-2 ripple">
-                        <i class="fas fa-chart-line fa-fw me-3"></i><span>Analytics</span>
-                    </a>
-                    <a href="#"
-                       class="list-group-item list-group-item-action py-2 ripple">
-                        <i class="fas fa-chart-pie fa-fw me-3"></i><span>SEO</span>
-                    </a>
-                    <a href="#"
-                       class="list-group-item list-group-item-action py-2 ripple"><i class="fas fa-chart-bar fa-fw me-3"></i><span>Orders</span></a>
-                    <a href="#"
-                       class="list-group-item list-group-item-action py-2 ripple">
-                        <i class="fas fa-globe fa-fw me-3"></i><span>International</span>
-                    </a>
-                    <a href="#"
-                       class="list-group-item list-group-item-action py-2 ripple">
-                        <i class="fas fa-building fa-fw me-3"></i><span>Partners</span>
-                    </a>
-                    <a href="#"
-                       class="list-group-item list-group-item-action py-2 ripple">
-                        <i class="fas fa-calendar fa-fw me-3"></i><span>Calendar</span>
-                    </a>
-                    <a href="#"
-                       class="list-group-item list-group-item-action py-2 ripple"><i class="fas fa-users fa-fw me-3"></i><span>Users</span></a>
-                    <a href="#"
-                       class="list-group-item list-group-item-action py-2 ripple"><i class="fas fa-money-bill fa-fw me-3"></i><span>Sales</span></a>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
+
+<link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css' rel='stylesheet'>
+
+<style>
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+
+    .modal-backdrop {
+        opacity: 0.01 !important;
+    }
+    ul{
+        list-style-type: none; /* Remove bullets */
+        padding: 0; /* Remove padding */
+        margin: 0; /* Remove margins */
+    }
+    li {
+        transform: scale(1);
+        margin:10px;
+    }
+    #dialog.modal-dialog {
+     
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        margin: 0;
+    }
+    #alertModal.fade .modal-dialog {
+        transform: translate3d(0, 100vh, 0);
+    }
+
+    #alertModal.show .modal-dialog {
+        transform: translate3d(0, 0, 0);
+    }
+
+</style>
+<body style="width:100%;height:100%;">
+    <div class="modal fade" id="zlecenie" backdrop="static" keyboard="false" tabindex="-1" aria-labelledby="title" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="title">Nowe zlecenie</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="closeNewZlecenie" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form asp-action="NoveZamówienie" method="Post" id="attachDetachForm">
+                        <div class="modal-body">
+                            <div class="form-group row">
+                                <label for="process" class="col-sm-2 col-form-label">Process</label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" id="process" value="1" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="machine" class="col-sm-2 col-form-label">Machine</label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" id="machine" value="2" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="nrZlecenia" class="col-sm-2 col-form-label">Numer zlecenia</label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" id="nrZlecenia" />
+                                </div>
+                            </div>
+                            <div id="enterNumberSection" hidden>
+                                <div class="form-group row">
+                                    <label for="nrMaterialu" class="col-sm-2 col-form-label">Numer materialu</label>
+                                    <div class="col-sm-6">
+                                        <input class="form-control" id="nrMaterialu" placeholder="Wpisz numer materialu" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="ilość" class="col-sm-2 col-form-label">Ilość</label>
+                                    <div class="col-sm-6">
+                                        <input class="form-control" id="ilość" placeholder="Wpisz ilość zamawianego materialu" />
+                                    </div>
+                                </div>
+                                    <div class="modal-footer" style="width:100%">
+                                        <p>*wszyskie nięzbędne surowce już były zamówione. Wpisz numer materialu oraz ilość i zostaw komętarz!</p>
+                                        <div class="form-group" style="width:100%">
+                                            <div class="col text-center">
+                                                <input class="btn btn-primary" id="saveNSection" value="Save" onclick="AddByNum()" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="chekBoxSection" hidden>
+                                    <div class="form-group" style="width:100%">
+
+                                        <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton">
+                                            Wybierz z listy
+                                        </button>
+
+                                        <input value="0" hidden id="count" />
+                                    </div>
+                                    <div class="form-group" style="width:100%">
+                                        <div class="container">
+                                            <div class="row" style="width:100%">
+                                                <div class="col-lg-10" style="float:left;width:50%">
+                                                    <ul id="list" class="list-group-horizontal-sm" hidden>
+                                                    </ul>
+
+                                                </div>
+                                                <div class="col-lg-10" style="float: right !important; width: 50%">
+                                                    <ul id="list2" class="list-group-horizontal-sm" hidden>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer" style="width:100%">
+                                        <div class="form-group" style="width:100%">
+                                            <div class="col text-center">
+                                                <input class="btn btn-primary" id="saveChSection" value="Save" disabled onclick="Check()" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+<footer>
+    <div class="modal fade" id="alertModal" style="height: min-content; " tabindex="-1" aria-labelledby="title" aria-hidden="true">
+        <div class="modal-dialog" id="dialog" >
+            <div class="modal-content" style="background-color: transparent;border:none">
+
+                <div class="modal-body" style="background-color: transparent">
+                    <p id="textAlert"></p>
                 </div>
             </div>
-        </nav>
-        <!-- Sidebar -->
-        <!-- Navbar -->
-        <nav id="main-navbar"
-             class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
-            <!-- Container wrapper -->
-            <div class="container-fluid">
-                <!-- Toggle button -->
-                <button class="navbar-toggler"
-                        type="button"
-                        data-mdb-toggle="collapse"
-                        data-mdb-target="#sidebarMenu"
-                        aria-controls="sidebarMenu"
-                        aria-expanded="false"
-                        aria-label="Toggle navigation">
-                    <i class="fas fa-bars"></i>
-                </button>
-
-                <!-- Brand -->
-                <a class="navbar-brand" href="#">
-                    <img src="https://mdbootstrap.com/img/logo/mdb-transaprent-noshadows.png"
-                         height="25"
-                         alt=""
-                         loading="lazy" />
-                </a>
-                <!-- Search form -->
-                <form class="d-none d-md-flex input-group w-auto my-auto">
-                    <input autocomplete="off"
-                           type="search"
-                           class="form-control rounded"
-                           placeholder='Search (ctrl + "/" to focus)'
-                           style="min-width: 225px" />
-                    <span class="input-group-text border-0">
-                        <i class="fas fa-search"></i>
-                    </span>
-                </form>
-
-                <!-- Right links -->
-                <ul class="navbar-nav ms-auto d-flex flex-row">
-                    <!-- Notification dropdown -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link me-3 me-lg-0 dropdown-toggle hidden-arrow"
-                           href="#"
-                           id="navbarDropdownMenuLink"
-                           role="button"
-                           data-mdb-toggle="dropdown"
-                           aria-expanded="false">
-                            <i class="fas fa-bell"></i>
-                            <span class="badge rounded-pill badge-notification bg-danger">1</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end"
-                            aria-labelledby="navbarDropdownMenuLink">
-                            <li><a class="dropdown-item" href="#">Some news</a></li>
-                            <li><a class="dropdown-item" href="#">Another news</a></li>
-                            <li>
-                                <a class="dropdown-item" href="#">Something else here</a>
-                            </li>
-                        </ul>
-                    </li>
-
-                    <!-- Icon -->
-                    <li class="nav-item">
-                        <a class="nav-link me-3 me-lg-0" href="#">
-                            <i class="fas fa-fill-drip"></i>
-                        </a>
-                    </li>
-                    <!-- Icon -->
-                    <li class="nav-item me-3 me-lg-0">
-                        <a class="nav-link" href="#">
-                            <i class="fab fa-github"></i>
-                        </a>
-                    </li>
-
-                    <!-- Icon dropdown -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link me-3 me-lg-0 dropdown-toggle hidden-arrow"
-                           href="#"
-                           id="navbarDropdown"
-                           role="button"
-                           data-mdb-toggle="dropdown"
-                           aria-expanded="false">
-                            <i class="united kingdom flag m-0"></i>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end"
-                            aria-labelledby="navbarDropdown">
-                            <li>
-                                <a class="dropdown-item" href="#">
-                                    <i class="united kingdom flag"></i>English
-                                    <i class="fa fa-check text-success ms-2"></i>
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider" /></li>
-                            <li>
-                                <a class="dropdown-item" href="#"><i class="poland flag"></i>Polski</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="#"><i class="china flag"></i>中文</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="#"><i class="japan flag"></i>日本語</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="#"><i class="germany flag"></i>Deutsch</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="#"><i class="france flag"></i>Français</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="#"><i class="spain flag"></i>Español</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="#"><i class="russia flag"></i>Русский</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="#"><i class="portugal flag"></i>Português</a>
-                            </li>
-                        </ul>
-                    </li>
-
-                    <!-- Avatar -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle hidden-arrow d-flex align-items-center"
-                           href="#"
-                           id="navbarDropdownMenuLink"
-                           role="button"
-                           data-mdb-toggle="dropdown"
-                           aria-expanded="false">
-                            <img src="https://mdbootstrap.com/img/Photos/Avatars/img (31).jpg"
-                                 class="rounded-circle"
-                                 height="22"
-                                 alt=""
-                                 loading="lazy" />
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end"
-                            aria-labelledby="navbarDropdownMenuLink">
-                            <li><a class="dropdown-item" href="#">My profile</a></li>
-                            <li><a class="dropdown-item" href="#">Settings</a></li>
-                            <li><a class="dropdown-item" href="#">Logout</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-            <!-- Container wrapper -->
-        </nav>
-        <!-- Navbar -->
-    </header>
-    <!--Main Navigation-->
-    <!--Main layout-->
-    <main style="margin-top: 58px">
-        <div class="container pt-4">
-
         </div>
-    </main>
-    <!--Main layout-->
-    <!-- MDB -->
-    <!-- Custom scripts -->
-    <script type="text/javascript" src="js/script.js"></script>
-</body>
-</html>
-@section Scripts{
 
-    <script src="~/mdb/mdb.min.js"></script>
+    </div>
+</footer>
+
+
+
+
+@section Scripts{
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js" integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/js/site.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"
+            integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0="
+            crossorigin="anonymous"></script>
+
+    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.jqueryui.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        $(document).ready(function () {
-            var ctx = document.getElementById("myChart");
+        var regExp = /[0-9][0-9][0-9][0-9][0-9][0-9][0-9]/;
+        var button = document.getElementById("addList");
+        var number = document.getElementById('numberCount');
+        var proces = document.getElementById('process');
+        var machine = document.getElementById('machine');
+        var nrZlecenia = document.getElementById('nrZlecenia');
+        var nrMaterialu = document.getElementById('nrMaterialu');
+        var count = document.getElementById('ilość');
 
-            var myChart = new Chart(ctx, {
-                type: "line",
-                data: {
-                    labels: [
-                        "Sunday",
-                        "Monday",
-                        "Tuesday",
-                        "Wednesday",
-                        "Thursday",
-                        "Friday",
-                        "Saturday",
-                    ],
-                    datasets: [
-                        {
-                            data: [15339, 21345, 18483, 24003, 23489, 24092, 12034],
-                            lineTension: 0,
-                            backgroundColor: "transparent",
-                            borderColor: "#007bff",
-                            borderWidth: 4,
-                            pointBackgroundColor: "#007bff",
-                        },
-                    ],
-                },
-                options: {
-                    scales: {
-                        yAxes: [
-                            {
-                                ticks: {
-                                    beginAtZero: false,
-                                },
-                            },
-                        ],
-                    },
-                    legend: {
-                        display: false,
-                    },
-                },
-            });
+        $(document).ready(function () {
+            
+            $('#zlecenie').modal('show');
+
+            $('#zlecenie').modal({ backdrop: 'static', keyboard: false });
+            $.ajax({
+                type: 'Get',
+                url: '/Home/GetIngredients',
+                success: function (data) {
+                    /* for (var i = 0; i < data.length; i++) {
+                        if (i % 2 == 0) {
+                            $('#list').append("<li class='list-group-item'><input class='form-check-input' value='" + data[i] + "' type='checkbox' id='Check' />" +
+                                "<label class='form-check-label' for='Check' id='label'>" + data[i] + "</label></li > ")
+                        }
+                        else {
+                            $('#list2').append("<li class='list-group-item'><input class='form-check-input' value='" + data[i] + "' type='checkbox' id='Check' />" +
+                                "<label class='form-check-label' for='Check' id='label'>" + data[i] + "</label></li > ")
+                        }
+                    }
+                    */
+                    nrZlecenia.value = parseInt(data['details']['nrZlecenia']);
+
+                    if (data['num'] == 0) {
+                        $('#enterNumberSection').removeAttr('hidden');
+                        document.getElementById('chekBoxSection').hidden = true;
+                    }
+                    else {
+                        $('#chekBoxSection').removeAttr('hidden');
+                        document.getElementById('enterNumberSection').hidden = true;
+                        $('#saveChSection').removeAttr('disabled');
+                        document.getElementById('saveNSection').disabled = true;
+                        $.each(data['items'], function (index, value) {
+                            if (data['items'] != null) {
+                                if (index % 2 == 0) {
+                                    $('#list').append("<li class='list-group-item'><input class='form-check-input' value='" + data['items'][index]['item1'] + "' type='checkbox' id='ingredient1" + index + "' />" +
+                                        "<label class='form-check-label' for='Check' id='label'>" + data['items'][index]['item2'] + "</label></li > ")
+                                }
+                                else {
+                                    $('#list2').append("<li class='list-group-item'><input class='form-check-input' value='" + data['items'][index]['item1'] + "' type='checkbox' id='ingredient2"+index+"' />" +
+                                        "<label class='form-check-label' for='Check' id='label'>" + data['items'][index]['item2'] + "</label></li > ")
+                                }
+                            }
+                        })
+                        
+                        
+                        $.each(data['opakowania'], function (index, value) {
+                            if (data['opakowania'][index] != null) {
+                                if (index % 2 == 0) {
+                                    $('#list').append("<li class='list-group-item'><input class='form-check-input' value='" + data['opakowania'][index]['materialNumber'] + "' type='checkbox' id='ingredient3" + index + "' />" +
+                                        "<label class='form-check-label' for='Check' id='label'>" + data['opakowania'][index]['name'] + "</label></li > ")
+                                }
+                                else {
+                                    $('#list2').append("<li class='list-group-item'><input class='form-check-input' value='" + data['opakowania'][index]['materialNumber'] + "' type='checkbox' id='ingredient4"+index+"' />" +
+                                        "<label class='form-check-label' for='Check' id='label'>" + data['opakowania'][index]['name'] + "</label></li > ")
+                                }
+                            }
+                        })
+                        
+                      
+                      //  if ($("input.form-check-input:checked")) {
+                            
+                       // }
+                       // else {
+                      //      document.getElementById('saveChSection').disabled = true;
+                       //     document.getElementById('saveNSection').disabled = true;
+                       // }
+                    }
+                }
+            })
+            $('#dropdownMenuButton').on('click', function () {
+                var num = $('#count').val();
+                if (num == 0) {
+                    $('#list').removeAttr('hidden');
+                    $('#list2').removeAttr('hidden');
+                    $('#count').val(num + 1);
+                } else {
+                    $('#list').attr('hidden', 'true');
+                    $('#list2').attr('hidden', 'true');
+                    $('#count').val(num - 1);
+                    $('.form-check-input').prop('checked', false);
+                }
+                
+            })
         })
+        function AddByNum() {
+            Add($("#nrMaterialu"), 'SetByNumberInput', parseInt(count.value));
+            /*
+             * work fine
+            var favorite= [];
+            $.each($("#nrMaterialu"), function () {
+                favorite.push($(this).val());
+            /////-->work fine ---> favorite.push($('#nrMaterialu').val());
+            });
+            var dataPass = [];
+            for (var i = 0; i < favorite.length; i++) {
+                dataPass.push({
+                    "id": i, "ingredient": favorite[i],
+                    "itemId": parseInt(nrZlecenia.value),
+                    "processId": parseInt(proces.value),
+                    "machineId": parseInt(machine.value),
+                    "count": parseInt(count.value)
+                });
+            }
+            alert(JSON.stringify(dataPass));
+            $.ajax({
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                url: '/Home/SetByNumberInput',
+                data: JSON.stringify(dataPass),
+                success: function (data) {
+                    $('#alertModal').modal('show');
+                    $('#textAlert').text('Zamówienie przyjęte do realizacji!');
+                    $('#textAlert').css({ "text - align": "center", "color": "green", "font-weight": 600 });
+                    setTimeout(function () {
+                        $('#alertModal').modal('hide');
+                    }, 1500);
+                    alert(JSON.stringify(data));
+                },
+                error: function (data) {
+                    $('#alertModal').modal('show');
+                    $('#textAlert').text('Wystąpił problem!');
+                    $('#textAlert').css({ "text - align": "center", "color": "red", "font-weight": 600 });
+                    setTimeout(function () {
+                        $('#alertModal').modal('hide');
+                    }, 1500);
+                    alert(JSON.stringify(data));
+                }
+            });
+            */
+            
+        }
+
+        function Check() {
+            Add($("input.form-check-input:checked"), 'PostMethod', 0);
+           /*
+            var favorite = [];
+            $.each($("#ingredient1:checked"), function () {
+                favorite.push($(this).val());
+            });
+            var dataPass = [];
+            for (var i = 0; i < favorite.length; i++) {
+                dataPass.push({
+                    "id": i, "ingredient": favorite[i],
+                    "itemId": parseInt(nrZlecenia.value),
+                    "processId": parseInt(proces.value), "machineId": parseInt(machine.value)
+                });
+            }
+            alert(JSON.stringify(dataPass));
+            $.ajax({
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                url: '/Home/PostMethod',
+                data: JSON.stringify(dataPass),
+                success: function (data) {
+                    $('#alertModal').modal('show');
+                    $('#textAlert').text('Zamówienie przyjęte do realizacji!');
+                    $('#textAlert').css({ "text - align": "center", "color": "green", "font-weight": 600});
+                    setTimeout(function () {
+                        $('#alertModal').modal('hide');
+                    }, 1500);
+                    alert(JSON.stringify(data));
+                },
+                error: function (response) {
+                    $('#alertModal').modal('show');
+                    $('#textAlert').text('Wystąpił problem!');
+                    $('#textAlert').css({ "text - align": "center", "color": "red", "font-weight":600});
+                    setTimeout(function () {
+                        $('#alertModal').modal('hide');
+                    }, 1500);
+                    alert(JSON.stringify(data));
+
+                }
+            });
+            */
+        }
+        function Add(inputValue, actionName, count) {
+            var favorite = [];
+            $.each($(inputValue), function () {
+                favorite.push($(this).val());
+                /////-->work fine ---> favorite.push($('#nrMaterialu').val());
+            });
+            var dataPass = [];
+            for (var i = 0; i < favorite.length; i++) {
+                dataPass.push({
+                    "id": i, "ingredient": favorite[i],
+                    "itemId": parseInt(nrZlecenia.value),
+                    "processId": parseInt(proces.value),
+                    "machineId": parseInt(machine.value),
+                    "count": count
+                });
+            }
+            alert(JSON.stringify(dataPass));
+            $.ajax({
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                url: '/Home/'+ actionName,
+                data: JSON.stringify(dataPass),
+                success: function (data) {
+                    $('#alertModal').modal('show');
+                    $('#textAlert').text('Zamówienie przyjęte do realizacji!');
+                    $('#textAlert').css({ "text - align": "center", "color": "green", "font-weight": 600 });
+                    setTimeout(function () {
+                        $('#alertModal').modal('hide');
+                    }, 1500);
+                    
+                },
+                error: function (data) {
+                    $('#alertModal').modal('show');
+                    $('#textAlert').text('Wystąpił problem!');
+                    $('#textAlert').css({ "text - align": "center", "color": "red", "font-weight": 600 });
+                    setTimeout(function () {
+                        $('#alertModal').modal('hide');
+                    }, 1500);
+                    
+                }
+            });
+        }
     </script>
 }

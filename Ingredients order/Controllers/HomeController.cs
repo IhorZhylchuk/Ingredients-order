@@ -33,9 +33,9 @@ namespace Ingredients_order.Controllers
         public IActionResult Index()
         {
             var recipies = new SelectList(_dbContext.Recipes.Select(n => n.Name).ToList());
-            var opakowanie = new SelectList(_dbContext.Opakowania.Where(i => i.Id < 4).Select(n => n.Name).ToList());
-            var dekel = new SelectList(_dbContext.Opakowania.Where(i => i.Id > 3 && i.Id < 7).Select(n => n.Name).ToList());
-            var naklejka = new SelectList(_dbContext.Opakowania.Where(i => i.Id > 6).Select(n => n.Name).ToList());
+            var opakowanie = new SelectList(_dbContext.Ingredients.Where(i => i.Use == "Container").Select(n => n.Name).ToList());
+            var dekel = new SelectList(_dbContext.Ingredients.Where(i => i.Use == "Cap").Select(n => n.Name).ToList());
+            var naklejka = new SelectList(_dbContext.Ingredients.Where(i => i.Use == "Label").Select(n => n.Name).ToList());
             ViewBag.Recipies = recipies;
             ViewBag.Opakowania = opakowanie;
             ViewBag.Dekel = dekel;
@@ -46,11 +46,11 @@ namespace Ingredients_order.Controllers
         {
             var zlecenie = _dbContext.Items.Where(i => i.Id == id).Select(i => i).FirstOrDefault();
             var surowce = _dbContext.Relations.Where(i => i.RecipeId == zlecenie.RecipeId).Select(i => i.IngredientsId).ToList();
-            List<Opakowania> opakowania = new List<Opakowania>()
+            List<Ingredient> opakowaniaList = new List<Ingredient>()
             {
-                _dbContext.Opakowania.Where(n => n.Name == zlecenie.Opakowanie).Select(o => o).FirstOrDefault(),
-                _dbContext.Opakowania.Where(n => n.Name == zlecenie.PokrywaNekrętka).Select(o => o).FirstOrDefault(),
-                _dbContext.Opakowania.Where(n => n.Name == zlecenie.Opakowanie).Select(o => o).FirstOrDefault()
+                _dbContext.Ingredients.Where(n => n.Name == zlecenie.Opakowanie).Select(o => o).FirstOrDefault(),
+                _dbContext.Ingredients.Where(n => n.Name == zlecenie.PokrywaNekrętka).Select(o => o).FirstOrDefault(),
+                _dbContext.Ingredients.Where(n => n.Name == zlecenie.Naklejka).Select(o => o).FirstOrDefault()
             };
 
             List<Tuple<int, string, double>> ingredients = new List<Tuple<int, string, double>>();
@@ -60,30 +60,23 @@ namespace Ingredients_order.Controllers
                 var ingredient = _dbContext.Ingredients.Where(i => i.Id == elem).Select(i => i).FirstOrDefault();
                 ingredients.Add(new Tuple<int, string, double>(ingredient.MaterialNumber, ingredient.Name, counts));
             }
-            /*
-            List<Ingredient> ingredients = new List<Ingredient>();
-            foreach(var elem in surowce)
-            {
-                var ingredient = _dbContext.Ingredients.Where(i => i.Id == elem).Select(i => i).FirstOrDefault();
-                ingredients.Add(ingredient);
-            }
-            var counts = _dbContext.ItemsCount.Where(i => i.ItemId == id).Select(i => i).ToList();
-
-            return Json(new {zlecenie, ingredients, opakowania, counts});
-            */
-            return Json(new { items = ingredients,details = zlecenie });
-        }
-        public IActionResult Test()
-        {
-            return View();
+            return Json(new { items = ingredients,details = zlecenie, opakowania = opakowaniaList });
         }
         public async Task<IActionResult> NoweZlecenie(Item model)
         {
             
             Item item = model;
             item.RecipeId = _dbContext.Recipes.Where(n => n.Name == model.RecipesName).Select(i => i.Id).FirstOrDefault();
+
+            var capasity = _dbContext.Ingredients.Where(n => n.Name == model.Opakowanie).Select(i => i.Capacity).FirstOrDefault();
+            item.IlośćOpakowań = Convert.ToInt32(model.Count/capasity);
+            item.IlośćNaklejek = item.IlośćOpakowań;
+            item.IlośćPokrywNekrętek = item.IlośćOpakowań;
+
             await _dbContext.Items.AddAsync(item);
             _dbContext.SaveChanges();
+           
+            
             var surowce = _dbContext.Relations.Where(i => i.RecipeId == item.RecipeId).Select(i => i).ToList();
             List<ItemsCount> ingredientsCount = new List<ItemsCount>();
             foreach(var id in surowce)
@@ -94,11 +87,201 @@ namespace Ingredients_order.Controllers
                 surowiec.IngredientCount = DefaultRecipies.Count(model.Count, id.Amount);
                 ingredientsCount.Add(surowiec);
             }
-            _dbContext.ItemsCount.AddRange(ingredientsCount);
             
+            await _dbContext.ItemsCount.AddRangeAsync(ingredientsCount);         
             _dbContext.SaveChanges();
 
             return RedirectToAction("Index");
+        }
+        public IActionResult Test()
+        {
+            //var ingredients = _dbContext.Ingredients.Select(i => i.Name).ToList();
+            return View();
+        }
+       
+        [HttpPost]
+        public IActionResult PostMethod([FromBody]IEnumerable<Order> orders)
+        {
+            if(orders != null)
+            {
+                try
+                {
+                    foreach (var order in orders)
+                    {
+                        NewOrder newOrder = new NewOrder();
+                       
+                        newOrder.IngredientNumber = Int32.Parse(order.Ingredient);
+                        newOrder.ItemId = order.ItemId;
+                        newOrder.MachineId = order.MachineId;
+                        newOrder.ProcessId = order.ProcessId;
+                        newOrder.Status = "W trakcie realizacji";
+
+                        var ingredient = _dbContext.Ingredients.Where(i => i.MaterialNumber == Int32.Parse(order.Ingredient)).Select(i => i).FirstOrDefault();
+                        if (ingredient.SectionName == "Składniki")
+                        {
+                           // var id = _dbContext.Ingredients.Where(i => i.MaterialNumber == Int32.Parse(order.Ingredient)).Select(i => i.Id).FirstOrDefault();
+                            var count = _dbContext.ItemsCount.Where(i => i.IngredientId == ingredient.Id).Select(i => i.IngredientCount).FirstOrDefault();
+                            newOrder.Count = count;
+                        }
+                        else
+                        {
+                             newOrder.Count = _dbContext.Items.Where(i => i.NrZlecenia == order.ItemId).Select(o => o.IlośćOpakowań).FirstOrDefault();
+                        }
+
+                        _dbContext.NewOrders.Add(newOrder);
+                        _dbContext.SaveChanges();
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.Message.ToString();
+                }
+                return Ok();
+            }
+            return NotFound();
+
+            
+        }
+        //[HttpPost]
+        public IActionResult NoveZamówienie(Order order) {
+            foreach(var item in order.Ingredient)
+            {
+                NewOrder newOrder = new NewOrder();
+                newOrder.ItemId = _dbContext.Items.Select(i => i.Id).FirstOrDefault();
+                newOrder.MachineId = 1;
+                newOrder.ProcessId = 1;
+                newOrder.Status = "Free";
+
+                _dbContext.NewOrders.Add(newOrder);
+                _dbContext.SaveChanges();
+            }
+
+            return View();
+        }
+        public JsonResult GetIngredients()
+        {
+            var zlecenie = _dbContext.Items.Where(i => i.Id == 5).Select(i => i).FirstOrDefault();
+            try
+            {
+                var orders = _dbContext.NewOrders.Where(i => i.ItemId == zlecenie.NrZlecenia).Select(n => n.IngredientNumber);
+                var surowce = _dbContext.Relations.Where(i => i.RecipeId == zlecenie.RecipeId).Where(i => i.IngredientsId != 13).Select(i => i.IngredientsId).ToList();
+             
+                List<Ingredient> opakowaniaList = new List<Ingredient>()
+                {
+                     _dbContext.Ingredients.Where(n => n.Name == zlecenie.Opakowanie && orders.Contains(n.MaterialNumber)== false).Select(o => o).FirstOrDefault(),
+                     _dbContext.Ingredients.Where(n => n.Name == zlecenie.PokrywaNekrętka && orders.Contains(n.MaterialNumber)== false).Select(o => o).FirstOrDefault(),
+                     _dbContext.Ingredients.Where(n => n.Name == zlecenie.Naklejka && orders.Contains(n.MaterialNumber)== false).Select(o => o).FirstOrDefault()
+
+                };
+             
+                List<Tuple<int, string, double>> ingredients = new List<Tuple<int, string, double>>();
+              
+                foreach (var elem in surowce)
+                {
+                    var ingredient = _dbContext.Ingredients.Where(i => i.Id == elem && orders.Contains(i.MaterialNumber) == false).Select(i => i).FirstOrDefault();
+                try {
+                    var counts = _dbContext.ItemsCount.Where(i => i.IngredientId == ingredient.Id).Select(i => i.IngredientCount).FirstOrDefault();
+                    ingredients.Add(new Tuple<int, string, double>(ingredient.MaterialNumber, ingredient.Name, counts));
+
+                }
+                catch (Exception e)
+                {
+                    e.Message.ToString();
+                }
+
+            };
+              if(ingredients.Count() != 0) 
+                {
+                    return Json(new { details = zlecenie, opakowania = opakowaniaList, items = ingredients, num = 1, onOrders = orders });
+                }
+              else if(opakowaniaList.Where(i => i != null).ToList().Count() != 0)
+                {
+                    return Json(new { details = zlecenie, opakowania = opakowaniaList, items = ingredients, num = 1, onOrders = orders });
+                }
+                else
+                {
+                    return Json(new { details = zlecenie, num = 0 });
+                }
+
+            }
+            catch (Exception e)
+            {
+                e.Message.ToString();
+            }
+            return Json(new { details = zlecenie, num = 0});
+        }
+        public JsonResult GetCountByNum(int numerMaterialu, int count, int numerZlecenia)
+        {
+            var result = _dbContext.NewOrders.Find(numerMaterialu);
+            if(result != null)
+            {
+                var ingredient = _dbContext.Ingredients.Where(n => n.MaterialNumber == numerMaterialu).Select(i => i).FirstOrDefault();
+                var orderedNum = _dbContext.NewOrders.Where(n => n.IngredientNumber == numerMaterialu && n.ItemId == numerZlecenia).Select(c => c.Count).Sum();
+                if(ingredient.SectionName == "Składniki")
+                {
+                    var ingredienCount = _dbContext.ItemsCount.Where(i => i.IngredientId == ingredient.Id && i.ItemId == numerZlecenia).Select(c => c.IngredientCount).FirstOrDefault();
+                    if((count / orderedNum)*100 <= 20)
+                    {
+
+                    }
+                }
+            }
+            return Json(null);
+        }
+        //[HttpPost]
+        public IActionResult SetByNumberInput ([FromBody]IEnumerable<Order> orders)
+        {
+            // var result = _dbContext.NewOrders.Find(4433212);
+            //  if (result != null)
+            // {
+            //var ingredient = _dbContext.Ingredients.Where(n => n.MaterialNumber == Int32.Parse(order.Ingredient)).Select(i => i).FirstOrDefault();
+            //  var zlecenie = _dbContext.Items.Where(n => n.NrZlecenia == order.ItemId).Select(i => i).FirstOrDefault();
+            //  var orderedNum = _dbContext.NewOrders.Where(n => n.IngredientNumber == Int32.Parse(order.Ingredient) && n.ItemId == zlecenie.Id).Select(c => c.Count).Sum();
+            //  if (ingredient.SectionName == "Składniki")
+            // {
+            //    var ingredienCount = _dbContext.ItemsCount.Where(i => i.IngredientId == ingredient.Id && i.ItemId == zlecenie.Id).Select(c => c.IngredientCount).FirstOrDefault();
+            // if ((order.Count / orderedNum) * 100 <= 20)
+            //   {
+            if(orders != null)
+            {
+                try
+                    {
+                    NewOrder newOrder = new NewOrder();
+
+                    foreach (var order in orders)
+                    {
+
+                        newOrder.IngredientNumber = Int32.Parse(order.Ingredient);
+                        newOrder.ItemId = order.ItemId;
+                        newOrder.MachineId = order.MachineId;
+                        newOrder.ProcessId = order.ProcessId;
+                        newOrder.Status = "W trakcie realizacji";
+                        newOrder.Count = order.Count;
+
+                        _dbContext.NewOrders.Add(newOrder);
+                        _dbContext.SaveChanges();
+                    }
+               
+
+                return Json(new { message = newOrder});
+                    }
+                catch(Exception e)
+                    {
+                e.Message.ToString();
+                    }
+            }
+          
+            return Json(new { message = "Error!" });
+
+
+            //   }
+            // else
+            //  {
+            //   return Json(new { message = "Error!" });
+            // }
+            // }
+            //  }
+            // return Json(null);
         }
     }
 }

@@ -44,7 +44,7 @@
                    class="list-group-item list-group-item-action py-2 ripple active">
                     <i class="fas fa-chart-area fa-fw me-3"></i><span>Zlecenia</span>
                 </a>
-                <a href="~/Home/Zamówienia"
+                <a href="#"
                    class="list-group-item list-group-item-action py-2 ripple">
                     <i class="fas fa-chart-pie fa-fw me-3"></i><span>Zamówienia</span>
                 </a>
@@ -65,7 +65,7 @@
 <main style="margin-top: 130px">
     <div class="container" style="width:100%">
         <div class="form-group">
-            <a style="margin-bottom: 10px; color: white" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#zlecenie">Dodaj zlecenie</a>
+            <a style="margin-bottom: 10px; color: white" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#zlecenie">Złóż zamówienie</a>
         </div>
 
         <div class="form-group">
@@ -82,47 +82,34 @@
             </table>
         </div>
     </div>
-    <div class="modal fade" id="zlecenie" backdrop="static" keyboard="false" tabindex="-1" aria-labelledby="title" aria-hidden="true">
+    <div class="modal fade" id="areaCheck" backdrop="static" keyboard="false" tabindex="-1" aria-labelledby="title" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="title">Nowe zlecenie</h5>
+                    <h5 class="modal-title" id="title">Area check</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" id="closeNewZlecenie" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form asp-action="NoweZlecenie" method="Post" id="noweZlecenie">
+                    <form asp-action="AreaCheck" method="Post" id="areaCheck">
                         <div class="modal-body">
                             <div class="form-group">
-                                <input class="form-control" type="number" placeholder="Numer zlecenia" required asp-for="NrZlecenia" min="2000000" max="3000000" id="nrZlecenia" />
+                                <select id="processList" class="form-select" asp-items="@ViewBag.Processes">
+                                    <option value="-1" id="defaultOption">Select process</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select id="machinesList" class="form-select" hidden></select>
+
+                            </div>
+                            <div class="form-group">
+                                <input id="binAdding" class="form-control" hidden  required maxlength="12" />
                                 <span id="warningText" style="color:red; font-size:small; font-style:normal"></span>
                             </div>
-                            <div class="form-group">
-                                <select id="recipies" class="form-select" asp-items="@ViewBag.Recipies" required asp-for="RecipesName">
-                                    <option value="-1">Wybierz recepture</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <input id="count" class="form-control" type="number" placeholder="Iłość (kg)" required min="500" max="3000" asp-for="Count" />
 
-                            </div>
-                            <div class="form-group">
-                                <select id="recipies" class="form-select" asp-items="@ViewBag.Opakowania" required asp-for="Opakowanie">
-                                    <option value="-1">Wybierz opakowanie</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <select id="recipies" class="form-select" asp-items="@ViewBag.Dekel" required asp-for="PokrywaNekrętka">
-                                    <option value="-1">Pokrywa/Nakrętka</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <select id="recipies" class="form-select" asp-items="@ViewBag.Naklejka" required asp-for="Naklejka">
-                                    <option value="-1">Etykieta</option>
-                                </select>
-                            </div>
-                            <div class="form-group" id="buttonsSection">
+                            <div class="form-group" id="buttonsSection" hidden>
                                 <div class="col text-center">
-                                    <input type="submit" value="Save" id="submitButton" class="btn btn-primary" />
+                                    <a id="detachButton" style="position:center" onclick="Detach()" class="btn btn-primary" hidden>Detach</a>
+                                    <input type="submit" value="Submit" id="submitButton" disabled class="btn btn-primary" />
                                 </div>
                             </div>
 
@@ -132,59 +119,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="details" backdrop="static" keyboard="false" tabindex="-1" aria-labelledby="title" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="title">Szczegóły zlecenia</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="Reset($('#numerMaterialu'))" id="closeZlecenie" aria-label="Close"></button>
-
-                </div>
-
-                <div class="modal-body">
-
-                    <form id="zlecenieDetails">
-
-                        <div class="modal-body">
-
-                            <div class="form-group">
-                                <span>Numer zlecenia:</span>
-                                <input class="form-control" readonly id="detailsNrZlecenia" />
-                            </div>
-                            <div class="form-group">
-                                <span>Receptura:</span>
-                                <input class="form-control" readonly id="detailsReceptura" />
-                            </div>
-                            <div class="form-group">
-                                <span>Ilość:</span>
-                                <input id="totalCount" class="form-control" readonly />
-
-                            </div>
-                            <div class="form-group" id="surowce">
-                                <span>Surowce:</span>
-                                <table class="table table-bordered table-hover" id="tableSurowce">
-                                    <tbody id="numerMaterialu">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="modal fade" id="alertModal" style="height: min-content; margin-top:-30px !important;" tabindex="-1" aria-labelledby="title" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered" id="dialog" >
-                                <div class="modal-content" style="background-color: transparent;border:none">
-
-                                    <div class="modal-body" style="background-color: transparent">
-                                        <p style="text-align: center; color: green; ">Copied</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </form>
-
-                </div>
-            </div>
-        </div>
-    </div>
+  
 
 </main>
 
@@ -206,9 +141,7 @@
 
     <script>
         var regExp = /[0-9][0-9][0-9][0-9][0-9][0-9][0-9]/;
-        var button = document.getElementById("addList");
-        var number = document.getElementById('numberCount');
-        var num = 1;
+
         $(document).ready(function () {
             $('#zlecenie').modal({ backdrop: 'static', keyboard: false });
             $('#details').modal({ backdrop: 'static', keyboard: false });

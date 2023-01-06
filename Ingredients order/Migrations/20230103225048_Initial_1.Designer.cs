@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ingredients_order.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221227231539_Iniitla_1")]
-    partial class Iniitla_1
+    [Migration("20230103225048_Initial_1")]
+    partial class Initial_1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -131,8 +131,8 @@ namespace Ingredients_order.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<double>("Count")
-                        .HasColumnType("float");
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
 
                     b.Property<int>("IlośćNaklejek")
                         .HasColumnType("int");
@@ -185,6 +185,36 @@ namespace Ingredients_order.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ItemsCount");
+                });
+
+            modelBuilder.Entity("Ingredients_order.Models.NewOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<double>("Count")
+                        .HasColumnType("float");
+
+                    b.Property<int>("IngredientNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MachineId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProcessId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NewOrders");
                 });
 
             modelBuilder.Entity("Ingredients_order.Models.Opakowania", b =>

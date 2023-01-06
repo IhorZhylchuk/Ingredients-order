@@ -13,20 +13,31 @@ namespace Ingredients_order.Models
         {
             List<Ingredient> Ingredients = new List<Ingredient>()
             {
-                new Ingredient {Id = 1, MaterialNumber = 4405021, Name = "Cukier"},
-                new Ingredient {Id = 2, MaterialNumber = 4431245, Name = "Mleko zagęszczone"},
-                new Ingredient {Id = 3, MaterialNumber = 4460655, Name = "Odpieniacz"},
-                new Ingredient {Id = 4, MaterialNumber = 4433212, Name = "Konserwant"},
-                new Ingredient {Id = 5, MaterialNumber = 4477132, Name = "Aromat Krówka"},
-                new Ingredient {Id = 6, MaterialNumber = 4498443, Name = "Truskawka"},
-                new Ingredient {Id = 7, MaterialNumber = 4453211, Name = "Skrobia modyfikowana"},
-                new Ingredient {Id = 8, MaterialNumber = 4465543, Name = "Aromat truskawka"},
-                new Ingredient {Id = 9, MaterialNumber = 4494328, Name = "Wiśnia"},
-                new Ingredient {Id = 10, MaterialNumber = 4465503, Name = "Aromat wiśnia"},
-                new Ingredient {Id = 11, MaterialNumber = 4475934, Name = "Guma Xantan"},
-                new Ingredient {Id = 12, MaterialNumber = 4416630, Name = "Aromat waniliowy"},
-                new Ingredient {Id = 13, Name = "Woda"},
-                new Ingredient {Id = 14, MaterialNumber = 4409530, Name = "Syrop glukozowy"},
+                new Ingredient {Id = 1, MaterialNumber = 4405021, SectionName = "Składniki", Name = "Cukier"},
+                new Ingredient {Id = 2, MaterialNumber = 4431245, SectionName = "Składniki", Name = "Mleko zagęszczone"},
+                new Ingredient {Id = 3, MaterialNumber = 4460655, SectionName = "Składniki", Name = "Odpieniacz"},
+                new Ingredient {Id = 4, MaterialNumber = 4433212, SectionName = "Składniki", Name = "Konserwant"},
+                new Ingredient {Id = 5, MaterialNumber = 4477132, SectionName = "Składniki", Name = "Aromat Krówka"},
+                new Ingredient {Id = 6, MaterialNumber = 4498443, SectionName = "Składniki", Name = "Truskawka"},
+                new Ingredient {Id = 7, MaterialNumber = 4458216, SectionName = "Składniki", Name = "Skrobia modyfikowana"},
+                new Ingredient {Id = 8, MaterialNumber = 4465543, SectionName = "Składniki", Name = "Aromat truskawka"},
+                new Ingredient {Id = 9, MaterialNumber = 4494328, SectionName = "Składniki", Name = "Wiśnia"},
+                new Ingredient {Id = 10, MaterialNumber = 4465503, SectionName = "Składniki", Name = "Aromat wiśnia"},
+                new Ingredient {Id = 11, MaterialNumber = 4475934, SectionName = "Składniki", Name = "Guma Xantan"},
+                new Ingredient {Id = 12, MaterialNumber = 4416630, SectionName = "Składniki", Name = "Aromat waniliowy"},
+                new Ingredient {Id = 13, Name = "Woda", SectionName = "Składniki" },
+                new Ingredient {Id = 14, MaterialNumber = 4409530, SectionName = "Składniki", Name = "Syrop glukozowy"},
+
+                new Ingredient{ Id = 15, MaterialNumber = 4439904, SectionName = "Opakowania", Use = "Container", Name = "Butelka czarna 1 kg", Capacity = 1},
+                new Ingredient{ Id = 16, MaterialNumber = 4477398, SectionName = "Opakowania", Use = "Container", Name = "Wiadro białe 10 kg", Capacity = 10},
+                new Ingredient{ Id = 17, MaterialNumber = 4033456, SectionName = "Opakowania", Use = "Container", Name = "Wiadro czerwone 3.2 kg", Capacity = 3.2},
+                new Ingredient{ Id = 18, MaterialNumber = 4499540, SectionName = "Opakowania", Use = "Cap", Name = "Nakrentka RD50"},
+                new Ingredient{ Id = 19, MaterialNumber = 4432324, SectionName = "Opakowania", Use = "Cap", Name = "Wieczko niebeiske średnica 18 cm (3.2 kg)"},
+                new Ingredient{ Id = 20, MaterialNumber = 4466950, SectionName = "Opakowania", Use = "Cap", Name = "Wieczko białe średnica 32 cm (10 kg)"},
+                new Ingredient{ Id = 21, MaterialNumber = 4436904, SectionName = "Opakowania", Use = "Label", Name = "Naklejka 100x100 biała"},
+                new Ingredient{ Id = 22, MaterialNumber = 4410932, SectionName = "Opakowania", Use = "Label", Name = "Naklejka Truskawka w żelu 3.2 kg"},
+                new Ingredient{ Id = 23, MaterialNumber = 4490437, SectionName = "Opakowania", Use = "Label", Name = "Naklejka Wiśnia w żelu 3.2 kg"},
+                new Ingredient{ Id = 24, MaterialNumber = 4400475, SectionName = "Opakowania", Use = "Label", Name = "Naklejka Sos Krówka 1 kg"}
 
             };
             List<Recipe> Recipies = new List<Recipe>()
@@ -83,8 +94,9 @@ namespace Ingredients_order.Models
                 new Opakowania{ Id = 8, MaterialNumber = 4410932, Name = "Naklejka Truskawka w żelu 3.2 kg"},
                 new Opakowania{ Id = 9, MaterialNumber = 4490437, Name = "Naklejka Wiśnia w żelu 3.2 kg"},
                 new Opakowania{ Id = 10, MaterialNumber = 4400475, Name = "Naklejka Sos Krówka 1 kg"}
+            
             };
-            modelBuilder.Entity<Opakowania>().HasData(opakowania);
+           // modelBuilder.Entity<Opakowania>().HasData(opakowania);
             modelBuilder.Entity<Ingredient>().HasData(Ingredients);
             modelBuilder.Entity<Recipe>().HasData(Recipies);
             modelBuilder.Entity<Relation>().HasData(relations);

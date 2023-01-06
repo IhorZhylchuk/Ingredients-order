@@ -2,7 +2,7 @@
 
 namespace Ingredients_order.Migrations
 {
-    public partial class Iniitla_1 : Migration
+    public partial class Initial_1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -29,7 +29,7 @@ namespace Ingredients_order.Migrations
                     NrZlecenia = table.Column<int>(type: "int", nullable: false),
                     RecipesName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RecipeId = table.Column<int>(type: "int", nullable: false),
-                    Count = table.Column<double>(type: "float", nullable: false),
+                    Count = table.Column<int>(type: "int", nullable: false),
                     Opakowanie = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PokrywaNekrętka = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Naklejka = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -55,6 +55,24 @@ namespace Ingredients_order.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ItemsCount", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NewOrders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ItemId = table.Column<int>(type: "int", nullable: false),
+                    ProcessId = table.Column<int>(type: "int", nullable: false),
+                    MachineId = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IngredientNumber = table.Column<int>(type: "int", nullable: false),
+                    Count = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NewOrders", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -199,6 +217,9 @@ namespace Ingredients_order.Migrations
 
             migrationBuilder.DropTable(
                 name: "ItemsCount");
+
+            migrationBuilder.DropTable(
+                name: "NewOrders");
 
             migrationBuilder.DropTable(
                 name: "Opakowania");

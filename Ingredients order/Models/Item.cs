@@ -12,7 +12,7 @@ namespace Ingredients_order.Models
         public int NrZlecenia { get; set; }
         public string RecipesName { get; set; }
         public int RecipeId { get; set; }
-        public double Count { get; set; }
+        public int Count { get; set; }
         public string Opakowanie { get; set; }
         public string PokrywaNekrętka { get; set; }
         public string Naklejka { get; set; }
