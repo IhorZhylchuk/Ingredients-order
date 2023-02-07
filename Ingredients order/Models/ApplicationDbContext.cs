@@ -12,9 +12,12 @@ namespace Ingredients_order.Models
         public DbSet<Item> Items { get; set; }
         public DbSet<Relation> Relations { get; set; }
         public DbSet<Ingredient> Ingredients { get; set; }
-       // public DbSet<Opakowania> Opakowania { get; set; }
+        public DbSet<OrdersForWarehouse> OrdersForWarehouse { get; set; }
         public DbSet<ItemsCount> ItemsCount { get; set; }
         public DbSet<NewOrder> NewOrders { get; set; }
+        public DbSet<BinAttachmentModel> Bins { get; set; }
+        public DbSet<ProcessModel> Processes { get; set; }
+        public DbSet<MachineModel> Machines { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> dbContext) : base(dbContext)
         {
            

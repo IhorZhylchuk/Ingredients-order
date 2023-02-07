@@ -52,6 +52,22 @@
 
 </style>
 <body style="width:100%;height:100%;">
+    <div class="modal fade" id="coment" backdrop="static" keyboard="false" tabindex="-1" aria-labelledby="title" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="title">Komentarz</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="closeComent" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
     <div class="modal fade" id="zlecenie" backdrop="static" keyboard="false" tabindex="-1" aria-labelledby="title" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -92,7 +108,10 @@
                                     <div class="col-sm-6">
                                         <input class="form-control" id="ilość" placeholder="Wpisz ilość zamawianego materialu" />
                                     </div>
-                                </div>
+                                    <div class="col-sm-12">
+                                        <span id="warningText" style="color:red; font-size:small; font-style:normal"></span>
+                                    </div>
+                                    </div>
                                     <div class="modal-footer" style="width:100%">
                                         <p>*wszyskie nięzbędne surowce już były zamówione. Wpisz numer materialu oraz ilość i zostaw komętarz!</p>
                                         <div class="form-group" style="width:100%">
@@ -191,6 +210,7 @@
             $('#zlecenie').modal('show');
 
             $('#zlecenie').modal({ backdrop: 'static', keyboard: false });
+           
             $.ajax({
                 type: 'Get',
                 url: '/Home/GetIngredients',
@@ -210,6 +230,30 @@
 
                     if (data['num'] == 0) {
                         $('#enterNumberSection').removeAttr('hidden');
+                        document.getElementById('ilość').addEventListener('keyup', function () {
+                            var dataPass = [nrMaterialu.value, this.value];
+                            $.ajax({
+                                type: 'Get',
+                                url: '@Url.Action("GetСount", "Home")/' + dataPass,
+                                success: function (data) {
+                                    if (JSON.stringify(data) == 2) {
+                                        $('#warningText').text("Chesz zamówić o wiele więcej niż jest potrzebno na wykonania tego zlecenia! ");
+                                        
+                                    }
+                                    else if (JSON.stringify(data) == 3) {
+                                        $('#warningText').text("Sprawdz ilość zamawianego materialu!! ");
+                                        
+
+                                    }
+                                    else if (JSON.stringify(data) == 1) {
+                                        $('#warningText').text("Wszystko OK! ");
+                                       
+
+                                    }
+ 
+                                }
+                            })
+                        });
                         document.getElementById('chekBoxSection').hidden = true;
                     }
                     else {

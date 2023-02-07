@@ -54,7 +54,7 @@ namespace Ingredients_order
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=MachineProcess}/{action=ProcessMachineSelecting}/{id?}");
             });
         }
     }

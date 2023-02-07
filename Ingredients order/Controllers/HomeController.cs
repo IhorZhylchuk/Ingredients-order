@@ -119,7 +119,6 @@ namespace Ingredients_order.Controllers
                         var ingredient = _dbContext.Ingredients.Where(i => i.MaterialNumber == Int32.Parse(order.Ingredient)).Select(i => i).FirstOrDefault();
                         if (ingredient.SectionName == "Składniki")
                         {
-                           // var id = _dbContext.Ingredients.Where(i => i.MaterialNumber == Int32.Parse(order.Ingredient)).Select(i => i.Id).FirstOrDefault();
                             var count = _dbContext.ItemsCount.Where(i => i.IngredientId == ingredient.Id).Select(i => i.IngredientCount).FirstOrDefault();
                             newOrder.Count = count;
                         }
@@ -129,6 +128,17 @@ namespace Ingredients_order.Controllers
                         }
 
                         _dbContext.NewOrders.Add(newOrder);
+                        OrdersForWarehouse defaultForOrders =new OrdersForWarehouse();
+                        defaultForOrders.Id = newOrder.Id;
+                        defaultForOrders.IngredientNumber = newOrder.IngredientNumber;
+                        defaultForOrders.ItemId = newOrder.ItemId;
+                        defaultForOrders.MachineId = newOrder.MachineId;
+                        defaultForOrders.ProcessId = newOrder.ProcessId;
+                        defaultForOrders.Status = newOrder.Status;
+                        defaultForOrders.Count = newOrder.Count;
+                        defaultForOrders.DataZamówienia = DateTime.Now.ToString();
+
+                        _dbContext.OrdersForWarehouse.Add(defaultForOrders);
                         _dbContext.SaveChanges();
                     }
                 }
@@ -152,7 +162,10 @@ namespace Ingredients_order.Controllers
                 newOrder.ProcessId = 1;
                 newOrder.Status = "Free";
 
+                //DefaultForOrders defaultForOrders = new OrdersForWarehouse();
+                //defaultForOrders = newOrder;
                 _dbContext.NewOrders.Add(newOrder);
+                //_dbContext.OrdersForWarehouse.Add(defaultForOrders);
                 _dbContext.SaveChanges();
             }
 
@@ -160,7 +173,7 @@ namespace Ingredients_order.Controllers
         }
         public JsonResult GetIngredients()
         {
-            var zlecenie = _dbContext.Items.Where(i => i.Id == 5).Select(i => i).FirstOrDefault();
+            var zlecenie = _dbContext.Items.Select(i => i).FirstOrDefault();
             try
             {
                 var orders = _dbContext.NewOrders.Where(i => i.ItemId == zlecenie.NrZlecenia).Select(n => n.IngredientNumber);
@@ -231,17 +244,6 @@ namespace Ingredients_order.Controllers
         //[HttpPost]
         public IActionResult SetByNumberInput ([FromBody]IEnumerable<Order> orders)
         {
-            // var result = _dbContext.NewOrders.Find(4433212);
-            //  if (result != null)
-            // {
-            //var ingredient = _dbContext.Ingredients.Where(n => n.MaterialNumber == Int32.Parse(order.Ingredient)).Select(i => i).FirstOrDefault();
-            //  var zlecenie = _dbContext.Items.Where(n => n.NrZlecenia == order.ItemId).Select(i => i).FirstOrDefault();
-            //  var orderedNum = _dbContext.NewOrders.Where(n => n.IngredientNumber == Int32.Parse(order.Ingredient) && n.ItemId == zlecenie.Id).Select(c => c.Count).Sum();
-            //  if (ingredient.SectionName == "Składniki")
-            // {
-            //    var ingredienCount = _dbContext.ItemsCount.Where(i => i.IngredientId == ingredient.Id && i.ItemId == zlecenie.Id).Select(c => c.IngredientCount).FirstOrDefault();
-            // if ((order.Count / orderedNum) * 100 <= 20)
-            //   {
             if(orders != null)
             {
                 try
@@ -250,7 +252,6 @@ namespace Ingredients_order.Controllers
 
                     foreach (var order in orders)
                     {
-
                         newOrder.IngredientNumber = Int32.Parse(order.Ingredient);
                         newOrder.ItemId = order.ItemId;
                         newOrder.MachineId = order.MachineId;
@@ -272,16 +273,122 @@ namespace Ingredients_order.Controllers
             }
           
             return Json(new { message = "Error!" });
+        }
+        public JsonResult GetOrders()
+        {
+            var nOrders = _dbContext.NewOrders.Select(o => o).ToList();
+            List<string> ingredients = new List<string>();
 
+            foreach(var item in nOrders)
+            {
+                ingredients.Add(_dbContext.Ingredients.Where(n => n.MaterialNumber == item.IngredientNumber).Select(n => n.Name).FirstOrDefault());
+            }
 
-            //   }
-            // else
-            //  {
-            //   return Json(new { message = "Error!" });
-            // }
-            // }
-            //  }
-            // return Json(null);
+            List<Tuple<int, string, double, string, int>> orders = new List<Tuple<int, string, double, string, int>>();
+
+            for(var i = 0 ; i< nOrders.Count(); i++)
+            {
+                orders.Add(new Tuple<int, string, double, string, int> (nOrders.Select(n => n.IngredientNumber).ToList()[i], ingredients[i], nOrders.Select(n => n.Count).ToList()[i], nOrders.Select(s => s.Status).ToList()[i], nOrders.Select(i => i.Id).ToList()[i]));
+            }
+          
+            return Json(orders);
+        }
+        public JsonResult GetOrdersForWarehouse()
+        {
+            var nOrders = _dbContext.OrdersForWarehouse.Select(o => o).ToList();
+            List<string> ingredients = new List<string>();
+
+            foreach (var item in nOrders)
+            {
+                ingredients.Add(_dbContext.Ingredients.Where(n => n.MaterialNumber == item.IngredientNumber).Select(n => n.Name).FirstOrDefault());
+            }
+
+            List<Tuple<int, string, double, string, int, string, string>> orders = new List<Tuple<int, string, double, string, int, string,string>>();
+
+            foreach(var item in nOrders)
+            {
+                //orders.Add(new Tuple<int, string, double, string, int, string, string>(item.I, ingredients[i], nOrders.Select(n => n.Count).ToList()[i], nOrders.Select(s => s.Status).ToList()[i], nOrders.Select(i => i.Id).ToList()[i], nOrders.Select));
+                  orders.Add(new Tuple<int, string, double, string, int, string, string>(item.IngredientNumber,_dbContext.Ingredients.Where(i => i.MaterialNumber == item.IngredientNumber).Select(n => n.Name).FirstOrDefault(),item.Count,item.Status,item.Id, item.DataZamówienia, item.DataRealizacji));
+
+            }
+
+            return Json(orders);
+        }
+        public async Task<IActionResult> ZmianaStatusu(int id)
+        {
+
+            if (id != 0)
+            {
+
+                try
+                {
+                    var status = _dbContext.NewOrders.Where(i => i.Id == id).Select(o => o).FirstOrDefault();
+                    status.Status = "Dostarczone";
+
+                    _dbContext.NewOrders.Update(status);
+                    var order = _dbContext.OrdersForWarehouse.Where(i => i.Id == status.Id).Select(o => o).FirstOrDefault();
+                    order.Status = status.Status;
+                    order.DataRealizacji = DateTime.Now.ToString();
+                    _dbContext.OrdersForWarehouse.Update(order);
+                    await _dbContext.SaveChangesAsync();
+
+                    return Ok();
+                }
+                catch (Exception e)
+                {
+                    return NotFound();
+                }
+
+            }
+            return NotFound();
+        }
+
+        public JsonResult GetStatus(int id)
+        {
+            var status = _dbContext.NewOrders.Where(i => i.Id == id).Select(s => s.Status).FirstOrDefault();
+            return Json(status);
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteOrder(int id)
+        {
+            if(id != 0)
+            {
+                _dbContext.OrdersForWarehouse.Remove(_dbContext.OrdersForWarehouse.Where(i => i.Id == id).FirstOrDefault());
+                await _dbContext.SaveChangesAsync();
+
+                return Ok();
+            }
+            return NotFound();
+
+        }
+        public IActionResult TableTest()
+        {
+            return View();
+        }
+        public JsonResult GetСount(string id)
+        {
+            var request = id.Split(',');
+            var count = _dbContext.NewOrders.Where(n => n.IngredientNumber == Int32.Parse(request[0])).Select(c => c.Count).FirstOrDefault();
+            try
+            {
+                if(Int32.Parse(request[1]) != 0)
+                {
+                    if ((Int32.Parse(request[1]) / count) * 100 <= 20)
+                    {
+                        return Json(1);
+                    }
+                    else
+                    {
+                        return Json(2);
+                    }
+                }
+                return Json(3);
+            }
+            catch(Exception e)
+            {
+                return Json(3);
+            }
+
         }
     }
 }

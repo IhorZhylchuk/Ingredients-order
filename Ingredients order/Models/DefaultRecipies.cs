@@ -94,9 +94,13 @@ namespace Ingredients_order.Models
                 new Opakowania{ Id = 8, MaterialNumber = 4410932, Name = "Naklejka Truskawka w żelu 3.2 kg"},
                 new Opakowania{ Id = 9, MaterialNumber = 4490437, Name = "Naklejka Wiśnia w żelu 3.2 kg"},
                 new Opakowania{ Id = 10, MaterialNumber = 4400475, Name = "Naklejka Sos Krówka 1 kg"}
-            
+
             };
-           // modelBuilder.Entity<Opakowania>().HasData(opakowania);
+
+            MainBinAttachment binAttachment = new MainBinAttachment();
+            modelBuilder.Entity<ProcessModel>().HasData(binAttachment.Processes);
+            modelBuilder.Entity<MachineModel>().HasData(binAttachment.Machines);
+
             modelBuilder.Entity<Ingredient>().HasData(Ingredients);
             modelBuilder.Entity<Recipe>().HasData(Recipies);
             modelBuilder.Entity<Relation>().HasData(relations);
@@ -105,6 +109,29 @@ namespace Ingredients_order.Models
         public static double Count(double totalCount, double item)
         {
             return Math.Round((totalCount / 1000) * item, 2);
+        }
+        public static List<Tuple<int, string, double, string, int>> GetOrdersDefault (ApplicationDbContext _dbContext, List<NewOrder> newOrders, List<OrdersForWarehouse> ordersForWarehouse) {
+            List<string> ingredients = new List<string>();
+            List<Tuple<int, string, double, string, int>> orders = new List<Tuple<int, string, double, string, int>>();
+
+            if (ordersForWarehouse == null)
+            {
+                for (var i = 0; i < newOrders.Count(); i++)
+                {
+                    ingredients.Add(_dbContext.Ingredients.Where(n => n.MaterialNumber == newOrders[i].IngredientNumber).Select(n => n.Name).FirstOrDefault());
+                    orders.Add(new Tuple<int, string, double, string, int>(newOrders.Select(n => n.IngredientNumber).ToList()[i], ingredients[i], newOrders.Select(n => n.Count).ToList()[i], newOrders.Select(s => s.Status).ToList()[i], newOrders.Select(i => i.Id).ToList()[i]));
+                }
+            }
+            else
+            {
+                for (var i = 0; i < ordersForWarehouse.Count(); i++)
+                {
+                    ingredients.Add(_dbContext.Ingredients.Where(n => n.MaterialNumber == ordersForWarehouse[i].IngredientNumber).Select(n => n.Name).FirstOrDefault());
+                    orders.Add(new Tuple<int, string, double, string, int>(ordersForWarehouse.Select(n => n.IngredientNumber).ToList()[i], ingredients[i], ordersForWarehouse.Select(n => n.Count).ToList()[i], ordersForWarehouse.Select(s => s.Status).ToList()[i], ordersForWarehouse.Select(i => i.Id).ToList()[i]));
+                }
+            }
+
+            return orders;
         }
     }
 }
