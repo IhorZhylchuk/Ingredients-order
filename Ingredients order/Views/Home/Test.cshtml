@@ -316,94 +316,12 @@
         })
         function AddByNum() {
             Add($("#nrMaterialu"), 'SetByNumberInput', parseInt(count.value));
-            /*
-             * work fine
-            var favorite= [];
-            $.each($("#nrMaterialu"), function () {
-                favorite.push($(this).val());
-            /////-->work fine ---> favorite.push($('#nrMaterialu').val());
-            });
-            var dataPass = [];
-            for (var i = 0; i < favorite.length; i++) {
-                dataPass.push({
-                    "id": i, "ingredient": favorite[i],
-                    "itemId": parseInt(nrZlecenia.value),
-                    "processId": parseInt(proces.value),
-                    "machineId": parseInt(machine.value),
-                    "count": parseInt(count.value)
-                });
-            }
-            alert(JSON.stringify(dataPass));
-            $.ajax({
-                type: 'POST',
-                contentType: 'application/json; charset=utf-8',
-                url: '/Home/SetByNumberInput',
-                data: JSON.stringify(dataPass),
-                success: function (data) {
-                    $('#alertModal').modal('show');
-                    $('#textAlert').text('Zamówienie przyjęte do realizacji!');
-                    $('#textAlert').css({ "text - align": "center", "color": "green", "font-weight": 600 });
-                    setTimeout(function () {
-                        $('#alertModal').modal('hide');
-                    }, 1500);
-                    alert(JSON.stringify(data));
-                },
-                error: function (data) {
-                    $('#alertModal').modal('show');
-                    $('#textAlert').text('Wystąpił problem!');
-                    $('#textAlert').css({ "text - align": "center", "color": "red", "font-weight": 600 });
-                    setTimeout(function () {
-                        $('#alertModal').modal('hide');
-                    }, 1500);
-                    alert(JSON.stringify(data));
-                }
-            });
-            */
             
         }
 
         function Check() {
             Add($("input.form-check-input:checked"), 'PostMethod', 0);
-           /*
-            var favorite = [];
-            $.each($("#ingredient1:checked"), function () {
-                favorite.push($(this).val());
-            });
-            var dataPass = [];
-            for (var i = 0; i < favorite.length; i++) {
-                dataPass.push({
-                    "id": i, "ingredient": favorite[i],
-                    "itemId": parseInt(nrZlecenia.value),
-                    "processId": parseInt(proces.value), "machineId": parseInt(machine.value)
-                });
-            }
-            alert(JSON.stringify(dataPass));
-            $.ajax({
-                type: 'POST',
-                contentType: 'application/json; charset=utf-8',
-                url: '/Home/PostMethod',
-                data: JSON.stringify(dataPass),
-                success: function (data) {
-                    $('#alertModal').modal('show');
-                    $('#textAlert').text('Zamówienie przyjęte do realizacji!');
-                    $('#textAlert').css({ "text - align": "center", "color": "green", "font-weight": 600});
-                    setTimeout(function () {
-                        $('#alertModal').modal('hide');
-                    }, 1500);
-                    alert(JSON.stringify(data));
-                },
-                error: function (response) {
-                    $('#alertModal').modal('show');
-                    $('#textAlert').text('Wystąpił problem!');
-                    $('#textAlert').css({ "text - align": "center", "color": "red", "font-weight":600});
-                    setTimeout(function () {
-                        $('#alertModal').modal('hide');
-                    }, 1500);
-                    alert(JSON.stringify(data));
-
-                }
-            });
-            */
+       
         }
         function Add(inputValue, actionName, count) {
             var favorite = [];

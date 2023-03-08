@@ -1,6 +1,5 @@
-﻿
-@{
-    ViewData["Title"] = "Home Page";
+﻿@{
+    ViewData["Title"] = "Warehouse";
 
 }
 <link href="~/css/site.css" rel="stylesheet" />
@@ -11,44 +10,64 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
 <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css' rel='stylesheet'>
 
-<body>
+<header>
+
+    <nav id="sidebarMenu"
+         class="collapse d-lg-block sidebar collapse bg-white">
+        <div class="position-sticky">
+            <div class="list-group list-group-flush mx-3 mt-4">
+                <a href="~/Home/Index"
+                   class="list-group-item list-group-item-action py-2 ripple"
+                   aria-current="true">
+                    <i class="fas fa-tachometer-alt fa-fw me-3"></i>
+                </a>
+                <a href="~/Home/Index"
+                   class="list-group-item list-group-item-action py-2 ripple">
+                    <i class="fas fa-chart-area fa-fw me-3"></i><span>Zlecenia</span>
+                </a>
+                <a href="~/MachineProcess/ProcessMachineSelecting"
+                   class="list-group-item list-group-item-action py-2 ripple">
+                    <i class="fas fa-chart-pie fa-fw me-3"></i><span>Zamówienia</span>
+                </a>
+                <a href="~/Home/Warehouse"
+                   class="list-group-item list-group-item-action py-2 ripple active">
+                    <i class="fas fa-chart-pie fa-fw me-3"></i><span>Magazyn</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <nav id="main-navbar"
+         class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="~/Home/Index">
+                <img src="~/Logo.png" />
+            </a>
+            <a id="customButton" role="button" style="float:right" class="btn btn-success" asp-action="Logout" asp-controller="Home">Logout <i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+        </div>
+
+    </nav>
+</header>
+<main style="margin-top: 130px">
     <div class="container" style="width:100%">
         <div class="form-group">
-            <table id="orders" class="table table-striped table-bordered display" style="width:100%;margin-top:50px;">
+            <table class="table table-striped table-bordered display" id="warehouse">
                 <thead>
                     <tr>
-                        <th style="text-align: center">
-                        </th>
                         <th id="nMaterialu">Nr. materialu</th>
                         <th id="nazwa">Nazwa produktu</th>
                         <th id="count">Ilość (kg/szt.)</th>
+                        <th id="dataZamówienia">Data zamówienia</th>
+                        <th id="dataRealizacji">Data realizacji</th>
+                        <th id="status">Status zamówienia</th>
                         <th></th>
                     </tr>
-
-
                 </thead>
+                <tbody id="tBody">
+                </tbody>
             </table>
-            <div class="form-group">
-                <table class="table table-striped table-bordered display" id="warehouse">
-                    <thead>
-                        <tr>
-                            <th id="nMaterialu">Nr. materialu</th>
-                            <th id="nazwa">Nazwa produktu</th>
-                            <th id="count">Ilość (kg/szt.)</th>
-                            <th id="dataZamówienia">Data zamówienia</th>
-                            <th id="dataRealizacji">Data realizacji</th>
-                            <th id="status">Status zamówienia</th>
-
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="tBody">
-                    </tbody>
-                </table>
-            </div>
         </div>
     </div>
-</body>
+</main>
 @section Scripts{
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
@@ -63,65 +82,6 @@
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function () {
-            dataTable = $('#orders').DataTable({
-                dom: 'Bfrtip',
-                ajax: {
-                    url: '/Home/GetOrders',
-                    type: 'GET',
-                    dataSrc: ''
-                },
-                rowId: 'Id',                
-                columnDefs: [
-                    { className: 'dt-body-center', targets: [0, 1, 2, 3, 4] },
-                    {
-                        targets: [1, 2, 3, 4],
-                        className: 'dt-head-center'
-                    },
-                    {
-                        targets: 0,
-                        width: '5%'
-                    },
-                    {
-                        targets: [1, 2],
-                        width: '26%'
-                    },
-                    {
-                        targets: [3],
-                        width: '13%'
-                    },
-
-                    {
-                        targets: [4],
-                        width: '30%'
-                    }
-
-                ],
-                
-                columns: [
-                    {
-                        data: "item4", "render": function (data) {
-                            if (data == "Dostarczone") {
-                                return "<div style='width:100%; position: center'><i class='bi bi-unlock-fill'></i></div >";
-                            }
-                            else {
-                                return "<div style='width:100%; position: center'><i class='bi bi-lock-fill'></i></div >";
-                            }
-                        } 
-                    },
-                    { data: "item1" },
-                    { data: "item2" },
-                    { data: "item3" },
-                    
-                    {
-                        data: "id", "render": function (data) {
-                            return "<div style='width:100%; position: center'><div class='btn-group' role='group' id='groupButton'><a class='btn btn-success btn-small' style = 'height: 5%; margin-left: 5px; margin-right: 5px;' data-toggle='modal' onclick='Details(" + data + ")'>Szczegóły</a><a class='btn btn-danger btn-small' style='height: 5 %' onclick=Delete(" + data + ") id='Delete' >Usuń zlecenie</a></div ></div >"
-                        },
-                        orderable: false,
-                        searchable: false,
-                        width: "150px"
-                    }
-                ]
-            });
             warehouseTable = $('#warehouse').DataTable({
                 dom: 'Bfrtip',
                 ajax: {
@@ -180,7 +140,7 @@
                                 return "<div><a class='btn btn-danger btn-small' style='height: 5 %' onclick='Delete(" + data + ")'>Usuń</a></div>";
                             }
                             else {
-                                alert(dat.responseText);
+                                alert(data.responseText);
                             }
                         },
                         orderable: false,
@@ -191,15 +151,13 @@
             });
         })
         function Status(id) {
-         
+
             $.ajax({
                 type: 'Post',
                 url: '@Url.Action("ZmianaStatusu", "Home")/'+ id,
-                //url: 'Home/ZmianaStatusu/' + parseInt(id),
                 success: function (response) {
-                    //alert(response);
                     $('#warehouse').DataTable().ajax.reload();
-                    $('#orders').DataTable().ajax.reload();
+                  //  $('#orders').DataTable().ajax.reload();
 
                 },
                 failure: function (response) {
@@ -209,7 +167,7 @@
                     alert('Some error occured!');
                 }
             })
-            
+
         }
         function Delete(id) {
             $.ajax({

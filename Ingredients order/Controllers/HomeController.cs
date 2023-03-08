@@ -361,7 +361,7 @@ namespace Ingredients_order.Controllers
             return NotFound();
 
         }
-        public IActionResult TableTest()
+        public IActionResult Warehouse()
         {
             return View();
         }

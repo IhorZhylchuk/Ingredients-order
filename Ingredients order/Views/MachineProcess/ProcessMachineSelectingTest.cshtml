@@ -1,12 +1,13 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
     var process = ViewBag.Processes;
-    Layout = "_MenuLayout.cshtml";
+
 
 }
 <link href="~/css/site.css" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.2/css/bootstrapValidator.min.css" />
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
@@ -93,6 +94,7 @@
 </style>
 
 <header>
+
     <nav id="sidebarMenu"
          class="collapse d-lg-block sidebar collapse bg-white">
         <div class="position-sticky">
@@ -103,20 +105,16 @@
                     <i class="fas fa-tachometer-alt fa-fw me-3"></i>
                 </a>
                 <a href="~/Home/Index"
-                   class="list-group-item list-group-item-action py-2 ripple" id="zleceniaButton">
+                   class="list-group-item list-group-item-action py-2 ripple ">
                     <i class="fas fa-chart-area fa-fw me-3"></i><span>Zlecenia</span>
                 </a>
-                <a href="~/MachineProcess/ProcessMachineSelecting"
-                   class="list-group-item list-group-item-action py-2 ripple active" id="zamówieniaButton">
+                <a href="~/MachineProcess/ProcessMachineSelectingTest"
+                   class="list-group-item list-group-item-action py-2 ripple active">
                     <i class="fas fa-chart-pie fa-fw me-3"></i><span>Zamówienia</span>
                 </a>
                 <a href="~/Home/Warehouse"
-                   class="list-group-item list-group-item-action py-2 ripple" id="magazyn">
+                   class="list-group-item list-group-item-action py-2 ripple">
                     <i class="fas fa-chart-pie fa-fw me-3"></i><span>Magazyn</span>
-                </a>
-                <a href="~/Home/Warehouse"
-                   class="list-group-item list-group-item-action py-2 ripple" id="magazyn">
-                    <i class="fas fa-chart-pie fa-fw me-3"></i><span>Odpad</span>
                 </a>
             </div>
         </div>
@@ -133,6 +131,7 @@
     </nav>
 
 </header>
+
 
 <main style="margin-top: 130px">
     <a style="margin-bottom: 10px; color: white" id="nZamówienie" hidden class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#newOrder">Zamówienie</a>
@@ -170,6 +169,7 @@
         <table id="orders" class="table table-striped table-bordered display col text-center" style="width:100%;margin-top:50px;">
             <thead>
                 <tr>
+                    <th style="text-align: center"></th>
                     <th style="text-align: center"></th>
                     <th id="nMaterialu">Nr. materialu</th>
                     <th id="nazwa">Nazwa produktu</th>
@@ -313,8 +313,18 @@
 
 
 @section Scripts{
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js" integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/js/site.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"
+            integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0="
+            crossorigin="anonymous"></script>
+
+    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.jqueryui.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         var regExp = /[0-9][0-9][0-9][0-9][0-9][0-9][0-9]/;
         var button = GetDoc("addList");
@@ -346,6 +356,7 @@
                     });
 
 
+       // GetDoc('zleceniaButton').className = "list-group-item list-group-item-action py-2 ripple active";
         $('#newOrder').modal({ backdrop: 'static', keyboard: false });
         const popover = new bootstrap.Popover(document.querySelector('.callPopover'), {
             container: '.modal-content',
@@ -552,7 +563,7 @@
         function EmptyContainer() {
             $('#container').empty();
             var table = "<table id='orders' class='table table-striped table-bordered display col text-center' style='width: 100%; margin-top: 50px;'>" +
-                "<thead><tr><th></th><th id='nMaterialu'>Nr. materialu</th>" +
+                "<thead><tr><th></th><th></th><th id='nMaterialu'>Nr. materialu</th>" +
                 "<th id='nazwa'>Nazwa produktu</th><th id='count'>Ilość (kg/szt.)</th>" +
                 "<th></th></tr ></thead ></table>";
             $('#container').html(table);
@@ -580,31 +591,31 @@
                 },
                 rowId: 'Id',
                 columnDefs: [
-                    { className: 'dt-body-center', targets: [0, 1, 2, 3, 4] },
+                    { className: 'dt-body-center', targets: [0, 1, 2, 3, 4, 5] },
                     {
-                        targets: [1, 2, 3, 4],
+                        targets: [2, 3, 4, 5],
                         className: 'dt-head-center'
                     },
                     {
                         targets: 0,
-                        width: '8%'
+                        width: '5%'
                     },
                     {
-                        targets: [1],
-                        width: '20%'
+                        targets: 1,
+                        width: '10%'
                     },
                     {
-                        targets: [2],
-                        width: '25%'
+                        targets: [2, 3],
+                        width: '23%'
                     },
                     {
-                        targets: [3],
-                        width: '15%'
+                        targets: [4],
+                        width: '11%'
                     },
 
                     {
-                        targets: [4],
-                        width: '32%'
+                        targets: [5],
+                        width: '25%'
                     }
 
                 ],
@@ -620,7 +631,11 @@
                             }
                         }
                     },
-
+                    {
+                        data: "item1", "render": function (data) {
+                            return "<a class='btn btn-light' onclick='Copy("+data+")'><i class='fa fa-clone' style='color: greenyellow; font-size: 25px;'></i>Copy</a>";
+                        }
+                    },
                     {
                         data: "item1",
                         className: "columnClick"

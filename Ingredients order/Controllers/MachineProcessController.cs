@@ -16,6 +16,10 @@ namespace Ingredients_order.Controllers
         {
             _dbContext = dbContext;
         }
+        public IActionResult ProcessMachineSelectingTest()
+        {
+            return View();
+        }
         public IActionResult ProcessMachineSelecting()
         {
             try {
@@ -55,7 +59,7 @@ namespace Ingredients_order.Controllers
 
                 for (var i = 0; i < nOrders.Count(); i++)
                 {
-                    orders.Add(new Tuple<int, string, double, string, int>(nOrders.Select(n => n.IngredientNumber).ToList()[i], ingredients[i], nOrders.Select(n => n.Count).ToList()[i], nOrders.Select(s => s.Status).ToList()[i], nOrders.Select(i => i.Id).ToList()[i]));
+                   orders.Add(new Tuple<int, string, double, string, int>(nOrders.Select(n => n.IngredientNumber).ToList()[i], ingredients[i], nOrders.Select(n => n.Count).ToList()[i], nOrders.Select(s => s.Status).ToList()[i], nOrders.Select(i => i.Id).ToList()[i]));
                 }
 
                 return Json(orders);
@@ -140,12 +144,17 @@ namespace Ingredients_order.Controllers
             }
             return Json(new { details = zlecenie, num = 0 });
         }
+        public IActionResult Test()
+        {
+            return View();
+        }
         public JsonResult GetСount(string id)
         {
-            var request = id.Split(',');
-            var count = _dbContext.NewOrders.Where(n => n.IngredientNumber == Int32.Parse(request[0])).Select(c => c.Count).FirstOrDefault();
             try
             {
+                var request = id.Split(',');
+                var count = _dbContext.NewOrders.Where(n => n.IngredientNumber == Int32.Parse(request[0])).Select(c => c.Count).FirstOrDefault();
+            
                 if (Int32.Parse(request[1]) != 0)
                 {
                     if ((Int32.Parse(request[1]) / count) * 100 <= 20)
@@ -161,6 +170,7 @@ namespace Ingredients_order.Controllers
             }
             catch (Exception e)
             {
+                e.Message.ToString();
                 return Json(3);
             }
 
@@ -235,6 +245,17 @@ namespace Ingredients_order.Controllers
                         newOrder.Count = order.Count;
 
                         _dbContext.NewOrders.Add(newOrder);
+                        OrdersForWarehouse defaultForOrders = new OrdersForWarehouse();
+                        defaultForOrders.Id = newOrder.Id;
+                        defaultForOrders.IngredientNumber = newOrder.IngredientNumber;
+                        defaultForOrders.ItemId = newOrder.ItemId;
+                        defaultForOrders.MachineId = newOrder.MachineId;
+                        defaultForOrders.ProcessId = newOrder.ProcessId;
+                        defaultForOrders.Status = newOrder.Status;
+                        defaultForOrders.Count = newOrder.Count;
+                        defaultForOrders.DataZamówienia = DateTime.Now.ToString();
+
+                        _dbContext.OrdersForWarehouse.Add(defaultForOrders);
                         _dbContext.SaveChanges();
                     }
 

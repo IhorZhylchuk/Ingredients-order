@@ -26,8 +26,6 @@
     .modal-backdrop {
         opacity: 0.01 !important;
     }
-
-
 </style>
 <header>
 
@@ -44,9 +42,13 @@
                    class="list-group-item list-group-item-action py-2 ripple active">
                     <i class="fas fa-chart-area fa-fw me-3"></i><span>Zlecenia</span>
                 </a>
-                <a href="~/Home/Zamówienia"
+                <a href="~/MachineProcess/ProcessMachineSelecting"
                    class="list-group-item list-group-item-action py-2 ripple">
                     <i class="fas fa-chart-pie fa-fw me-3"></i><span>Zamówienia</span>
+                </a>
+                <a href="~/Home/Warehouse"
+                   class="list-group-item list-group-item-action py-2 ripple">
+                    <i class="fas fa-chart-pie fa-fw me-3"></i><span>Magazyn</span>
                 </a>
             </div>
         </div>
@@ -61,6 +63,7 @@
         </div>
 
     </nav>
+
 </header>
 <main style="margin-top: 130px">
     <div class="container" style="width:100%">
@@ -169,7 +172,7 @@
                             </div>
                         </div>
                         <div class="modal fade" id="alertModal" style="height: min-content; margin-top:-30px !important;" tabindex="-1" aria-labelledby="title" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered" id="dialog" >
+                            <div class="modal-dialog modal-dialog-centered" id="dialog">
                                 <div class="modal-content" style="background-color: transparent;border:none">
 
                                     <div class="modal-body" style="background-color: transparent">
@@ -242,19 +245,16 @@
                         targets: [3],
                         width: '13%'
                     },
-
                     {
                         targets: [4],
                         width: '30%'
                     }
-
                 ],
                 columns: [
                     { data: null, "sortable": false },
                     { data: "nrZlecenia" },
                     { data: "recipesName" },
                     { data: "count" },
-
                     {
                         data: "id", "render": function (data) {
                             return "<div style='width:100%; position: center'><div class='btn-group' role='group' id='groupButton'><a class='btn btn-success btn-small' style = 'height: 5%; margin-left: 5px; margin-right: 5px;' data-toggle='modal' onclick='Details(" + data + ")'>Szczegóły</a><a class='btn btn-danger btn-small' style='height: 5 %' onclick=Delete(" + data + ") id='Delete' >Usuń zlecenie</a></div ></div >"
@@ -306,7 +306,6 @@
                 $('#addItem').append(new_list);
                 $.each(opakowania, function (index, value) {
                     $('#new_' + count).append("<option value='" + value + "'>" + value + "</option>");
-
                 })
                 $('#remove').removeAttr('hidden');
                 if (parseInt(input.value) == 4) {
@@ -342,7 +341,6 @@
                 $('#pokrywa').removeAttr('hidden');
                 input.value = value + 1;
                 document.getElementById('remove').hidden = false;
-
             }
             else if (value == 3) {
                 $('#naklejka').removeAttr('hidden');
@@ -355,41 +353,30 @@
                 document.getElementById('naklejka').hidden = true;
                 document.getElementById('add').hidden = true;
             }
-
             /*
                 if (value = 2) {
                 $('#opakowanie').removeAttr('hidden');
             }
             else if (value = 3) {
                 $('#pokrywa').removeAttr('hiidden');
-
             }
             else if (value = 4) {
                 $('#naklejka').removeAttr('hidden');
-
             }
             else {
                 document.getElementById('opakowanie').hidden = true;
                 document.getElementById('pokrywa').hidden = true;
                 document.getElementById('naklejka').hidden = true;
             }
-
               */
-
-
-
-
-
         }
         function RemoveList(input) {
             var value = parseInt(input.value);
-
             if (value == 2) {
                 document.getElementById('pokrywa').hidden = true;
                 document.getElementById('add').hidden = false;
                 input.value = value - 1;
                 //document.getElementById('remove').hidden = true;
-
             }
             else if (value == 1) {
                 document.getElementById('opakowanie').hidden = true;
@@ -402,7 +389,6 @@
             }
         }
         function Details(id) {
-
             $.ajax({
                 type: 'Get',
                 url: '/Home/Details/' + id,
@@ -419,23 +405,18 @@
                         $('#numerMaterialu').append("<tr><td id='matNumber__" + i + "' onclick='Copy($(this))'>" + data['ingredients'][i]['materialNumber'] + "</td><td>" + data['ingredients'][i]['name'] + "</td></tr>");
                     }
                    */
-
                     $.each(data['items'], function (index, value) {
                         if (data['items'][index]['item1'] != 0) {
                             $('#numerMaterialu').append("<tr><td id='matNumber_" + index + "' onclick='Copy($(this))'>" + data['items'][index]['item1'] + "</td><td>" + data['items'][index]['item2'] +
                                 "</td><td>" + data['items'][index]['item3'] + ' kg ' + "</td></tr>");
-
                         } else {
                             $('#numerMaterialu').append("<tr><td>" + '-' + "</td><td>" + data['items'][index]['item2'] + "</td><td>" + data['items'][index]['item3'] + ' kg ' + "</td></tr>");
-
                         }
-
                     })
                     $.each(data['opakowania'], function (index, value) {
                         $('#numerMaterialu').append("<tr><td id='matNumber__" + index + "' onclick='Copy($(this))'>" + data['opakowania'][index]['materialNumber'] + "</td><td>" + data['opakowania'][index]['name'] +
                             "</td><td>" + data['details']['ilośćOpakowań'] + ' szt. ' + "</td></tr>");
                     })
-
                 }
             })
         }
@@ -446,8 +427,6 @@
             setTimeout(function () {
                 $('#alertModal').modal('hide');
             }, 1500);
-
         }
-
     </script>
 }
