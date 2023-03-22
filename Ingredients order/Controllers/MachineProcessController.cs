@@ -91,9 +91,11 @@ namespace Ingredients_order.Controllers
 
             return Json(orders);
         }
-        public JsonResult GetIngredients()
+        public JsonResult GetIngredients(int zlecenieNumber)
         {
-            var zlecenie = _dbContext.Items.Select(i => i).FirstOrDefault();
+            //var zlecenie = _dbContext.Items.Select(i => i).FirstOrDefault();
+            var zlecenie = _dbContext.Items.Where(i => i.NrZlecenia == zlecenieNumber).Select(i => i).FirstOrDefault();
+
             try
             {
                 var orders = _dbContext.NewOrders.Where(i => i.ItemId == zlecenie.NrZlecenia).Select(n => n.IngredientNumber);

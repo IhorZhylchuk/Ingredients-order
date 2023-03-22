@@ -1,0 +1,25 @@
+﻿@model BinAttachmentModel;
+@{
+    Layout = null;
+}
+@using (Html.BeginForm("BinDetaching", "Waste", FormMethod.Post))
+{
+    @Html.HiddenFor(model => model.Id);
+    <div class="modal-content" style="width:350px;height:100px;position:center">
+        <form asp-action="BinAdding" asp-controller="Waste" method="post" id="targetForm">
+            <div class="modal-body">
+                <div class="form-group">
+                    <span id="warning"></span>
+                    <input class="form-control" type="text" asp-for="BinNumber" id="binNumber" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="center">
+                    <input type="submit" value="Submit" style="position:center" class="btn btn-primary" disabled />
+                </div>
+            </div>
+        </form>
+    </div>
+
+}

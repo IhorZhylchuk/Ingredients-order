@@ -1,0 +1,257 @@
+﻿@model Ingredients_order.Models.AttachedStringNamesModel
+@{
+    IEnumerable<Ingredients_order.Models.MachineModel> machines = ViewBag.Machines;
+    IEnumerable<Ingredients_order.Models.ProcessModel> processes = ViewBag.Processes;
+    IEnumerable<BinAttachmentModel> bins = ViewBag.Bins;
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css' rel='stylesheet'>
+
+<style>
+    .ui-dialog-titlebar-close:after {
+        content: 'X' !important;
+        position: absolute;
+        top: -4px;
+        right: 3px;
+    }
+
+    .modal-backdrop {
+        opacity: 0.01 !important;
+        width: 100%;
+        height: 100%;
+    }
+</style>
+<header>
+
+    <nav id="sidebarMenu"
+         class="collapse d-lg-block sidebar collapse bg-white">
+        <div class="position-sticky">
+            <div class="list-group list-group-flush mx-3 mt-4">
+                <a href="~/Home/Index"
+                   class="list-group-item list-group-item-action py-2 ripple"
+                   aria-current="true">
+                    <i class="fas fa-tachometer-alt fa-fw me-3"></i>
+                </a>
+                <a href="~/Home/Index"
+                   class="list-group-item list-group-item-action py-2 ripple">
+                    <i class="fas fa-chart-area fa-fw me-3"></i><span>Zlecenia</span>
+                </a>
+                <a href="~/MachineProcess/ProcessMachineSelecting"
+                   class="list-group-item list-group-item-action py-2 ripple">
+                    <i class="fas fa-chart-pie fa-fw me-3"></i><span>Zamówienia</span>
+                </a>
+                <a href="~/Home/Warehouse"
+                   class="list-group-item list-group-item-action py-2 ripple">
+                    <i class="fas fa-chart-pie fa-fw me-3"></i><span>Magazyn</span>
+                </a>
+                <a href="~/Waste/Index"
+                   class="list-group-item list-group-item-action py-2 ripple active" id="magazyn">
+                    <i class="fas fa-chart-pie fa-fw me-3"></i><span>Odpad</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <nav id="main-navbar"
+         class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+        <div class="container-fluid" style="width:min-content">
+            <a class="navbar-brand" href="~/Home/Index">
+                <img src="~/Logo.png" />
+            </a>
+    
+        </div>
+        <div class="container-fluid">
+            <a style="color: white;float:left !important; margin-left: 30px;" role="button" class="btn btn-primary" asp-action="Index"><i class="fa-solid fa-arrow-left-long"></i></a>
+            <a id="customButton" role="button" style="float:right" class="btn btn-success" asp-action="Logout" asp-controller="Home">Logout <i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+        </div>
+    </nav>
+
+</header>
+
+
+<main>
+    <div class="col text-center" style="margin-top:130px">
+        <h4 style="position:center">Working area</h4>
+    </div>
+    <div id="panel" style="width:100%; position:center"></div>
+    <div class="container" style="padding:5px;width:100%">
+        @foreach (var process in processes)
+        {
+            <div class="modal-content">
+                <h6 style="text-align: center; margin-top:10px;">@process.Name</h6>
+                <div class="card-deck" style="margin-top:10px; ">
+                    @foreach (var machine in machines.Where(p => p.Process.Id == process.Id).Select(m => m).ToList())
+                    {
+                        @if (bins.Select(m => m.Machine).Contains(machine) == true)
+                        {
+                            <div class="card" style="background-color: gainsboro;">
+                                <div class="card-body">
+                                    <h6 class="card-title" style="text-align:center">@machine.Name</h6>
+                                    <input class="form-control" id="binNumber" onclick="GetBin(@machine.Id)" readonly style="text-align:center" value="@bins.Where(m => m.Machine.Id == machine.Id).Select(b => b.BinNumber).Single()" />
+                                </div>
+
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="card" style="background-color: gainsboro;">
+                                <div class="card-body">
+                                    <h6 class="card-title" style="text-align:center">@machine.Name</h6>
+                                    <input class="form-control" id="emptyInput" style="text-align:center" onclick="SetValues(@machine.Id, @process.Id)" />
+                                    <div class="modal fade" id="addBin" tabindex="-1" aria-labelledby="title" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="title">Bin adding</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="close" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form asp-action="AttachDetachMenu" method="post">
+
+                                                        <div class="modal-body">
+                                                            <div class="form-group">
+                                                                <input asp-for="ProcessName" id="processName" hidden />
+                                                                <input asp-for="MachineName" id="machineName" hidden />
+                                                                <input class="form-control" type="text" required minlength="12" maxlength="12" asp-for="BinNumber" id="binNum" />
+                                                                <span id="warning" style="color:red; font-size:small; font-style:normal"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col text-center">
+                                                                <input type="submit" value="Submit" class="btn btn-primary" disabled id="submitButton" />
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                    <div class="card text-white bg-danger mb-3" style="max-width:100%;" id="attached" hidden>
+                                                        <div class="card-body">
+                                                            <h5 class="card-title">This bin is currently using</h5>
+                                                            <br />
+                                                            <span>Process</span>
+                                                            <input class="form-control" id="process" disabled />
+                                                            <br />
+                                                            <span>Machine</span>
+                                                            <input class="form-control" id="machine" disabled />
+                                                        </div>
+                                                    </div>
+                                                    <div class="card text-white bg-success mb-3" style="max-width: 100%;" id="freeToUse" hidden>
+                                                        <div class="card-body">
+                                                            <h5 class="card-title">Free to use</h5>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="modal-content" style="width:430px;height:180px;position:center" hidden id="addBin">
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                </div>
+            </div>
+        }
+    </div>
+</main>
+
+
+@section Scripts{
+
+    <script src="~/js/site.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js" integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.2/js/bootstrapValidator.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+    <script>
+        $(document).ready(function () {
+            $('#addBin').modal({ backdrop: 'static', keyboard: false });
+            $('#addBin').on('shown.bs.modal', function () {
+                $('#binNum').focus();
+            })
+            var attached = document.getElementById('attached');
+            var free = document.getElementById('freeToUse');
+            var process = document.getElementById('process');
+            var machine = document.getElementById('machine');
+            var button = document.getElementById('submitButton');
+            var message = $('#warning');
+            var input = document.getElementById('binNum');
+            input.addEventListener('keyup', function () {
+                var binNumber = this.value;
+                if (binNumber.length == 12) {
+                    $.ajax({
+                        type: 'Get',
+                        url: '@Url.Action("BinStatus", "Waste")',
+                        dataType: 'json',
+                        data: { 'binNumber': binNumber },
+                        success: function (data) {
+                            if (data['status'] == "Free to use") {
+                                if (binNumber.length == 12) {
+                                    free.removeAttribute('hidden');
+                                    button.removeAttribute('disabled');
+                                    message.text("");
+                                }
+                                else {
+                                    attached.hidden = true;
+                                    free.hidden = true;
+                                    button.disabled = true;
+                                    message.text("Please, check bin's number!");
+                                }
+
+                            }
+
+                            else if (data['status'] == "Filling") {
+                                if (binNumber.length == 12) {
+                                    attached.removeAttribute('hidden');
+                                    process.value = data['process'];
+                                    machine.value = data['machine'];
+                                    message.text("");
+                                    free.hidden = true;
+                                }
+
+                            }
+                            else if (data['status'] == null || binNumber.length != 12) {
+                                message.text("Please, check bin number!");
+                                attached.hidden = true;
+                                free.hidden = true;
+                                button.disabled = true;
+                            }
+                            else {
+                                attached.hidden = true;
+                                free.hidden = true;
+                                button.disabled = true;
+                                message.text("Please, check bin number!");
+                            }
+
+                        }
+                    })
+                }
+                else {
+                    attached.hidden = true;
+                    free.hidden = true;
+                    button.disabled = true;
+                    message.text("");
+                }
+
+            })
+
+            $('#close').on('click', function () {
+                $('#machineName').val('');
+                $('#processName').val('');
+                $('#binNum').val('');
+                message.text('');
+                free.hidden = true;
+                attached.hidden = true;
+            })
+        });
+
+    </script>
+}

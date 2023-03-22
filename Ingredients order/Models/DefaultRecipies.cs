@@ -133,5 +133,32 @@ namespace Ingredients_order.Models
 
             return orders;
         }
+        public static BinAttachmentModel Detach(ApplicationDbContext dBContext, string binNumber)
+        {
+            var bin = dBContext.Bins.Where(n => n.BinNumber == binNumber).Select(b => b).FirstOrDefault();
+            bin.BinNumber = bin.BinNumber;
+            bin.BinStatus = "Free to use";
+
+            bin.Machine = null;
+            bin.MachineName = null;
+            bin.ProcessId = 0;
+            bin.ProcessName = null;
+
+            return bin;
+
+        }
+        public static BinAttachmentModel Attach(ApplicationDbContext dBContext, AttachedStringNamesModel model)
+        {
+            BinAttachmentModel bin = new BinAttachmentModel();
+            bin.Id = dBContext.Bins.Where(n => n.BinNumber == model.BinNumber).Select(i => i.Id).Single();
+            bin.MachineName = dBContext.Machines.Where(i => i.Id == Int32.Parse(model.MachineName)).Select(n => n.Name).Single();
+            bin.Machine = dBContext.Machines.Where(m => m.ProcessModelId == Int32.Parse(model.ProcessName)).Where(m => m.Id == Int32.Parse(model.MachineName)).Select(m => m).Single();
+            bin.ProcessId = Int32.Parse(model.ProcessName);
+            bin.ProcessName = dBContext.Processes.Where(i => i.Id == Int32.Parse(model.ProcessName)).Select(n => n.Name).Single();
+            bin.BinNumber = model.BinNumber;
+            bin.BinStatus = "Filling";
+            return bin;
+        }
+
     }
 }

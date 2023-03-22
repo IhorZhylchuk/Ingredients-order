@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BinAttachment.Models
+namespace Ingredients_order.Models
 {
     public class LoginViewModel
     {

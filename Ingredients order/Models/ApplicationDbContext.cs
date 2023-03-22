@@ -18,6 +18,7 @@ namespace Ingredients_order.Models
         public DbSet<BinAttachmentModel> Bins { get; set; }
         public DbSet<ProcessModel> Processes { get; set; }
         public DbSet<MachineModel> Machines { get; set; }
+        public DbSet<PalettModel> PalettModel { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> dbContext) : base(dbContext)
         {
            

@@ -26,6 +26,13 @@
     .modal-backdrop {
         opacity: 0.01 !important;
     }
+    #alertModal.fade .modal-dialog {
+        transform: translate3d(0, -100vh, 0);
+    }
+
+    #alertModal.show .modal-dialog {
+        transform: translate3d(0,0, 0);
+    }
 </style>
 <header>
 
@@ -49,6 +56,10 @@
                 <a href="~/Home/Warehouse"
                    class="list-group-item list-group-item-action py-2 ripple">
                     <i class="fas fa-chart-pie fa-fw me-3"></i><span>Magazyn</span>
+                </a>
+                <a href="~/Waste/Index"
+                   class="list-group-item list-group-item-action py-2 ripple" id="odpad">
+                    <i class="fas fa-chart-pie fa-fw me-3"></i><span>Odpad</span>
                 </a>
             </div>
         </div>
@@ -97,36 +108,37 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <input class="form-control" type="number" placeholder="Numer zlecenia" required asp-for="NrZlecenia" min="2000000" max="3000000" id="nrZlecenia" />
-                                <span id="warningText" style="color:red; font-size:small; font-style:normal"></span>
+                                <span id="warning" style="color:red; font-size:small; font-style:normal"></span>
                             </div>
                             <div class="form-group">
                                 <select id="recipies" class="form-select" asp-items="@ViewBag.Recipies" required asp-for="RecipesName">
-                                    <option value="-1">Wybierz recepture</option>
+                                    <option value="-1" id="optionRecipie">Wybierz recepture</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <input id="count" class="form-control" type="number" placeholder="Iłość (kg)" required min="500" max="3000" asp-for="Count" />
-
+                                <span id="warningCount" style="color:red; font-size:small; font-style:normal"></span>
                             </div>
                             <div class="form-group">
-                                <select id="recipies" class="form-select" asp-items="@ViewBag.Opakowania" required asp-for="Opakowanie">
-                                    <option value="-1">Wybierz opakowanie</option>
+                                <select id="opakowanie" class="form-select" asp-items="@ViewBag.Opakowania" required asp-for="Opakowanie">
+                                    <option value="-1" id="optionOpakowanie">Wybierz opakowanie</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <select id="recipies" class="form-select" asp-items="@ViewBag.Dekel" required asp-for="PokrywaNekrętka">
-                                    <option value="-1">Pokrywa/Nakrętka</option>
+                                <select id="dekel" class="form-select" asp-items="@ViewBag.Dekel" required asp-for="PokrywaNekrętka">
+                                    <option value="-1" id="optionDekel">Pokrywa/Nakrętka</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <select id="recipies" class="form-select" asp-items="@ViewBag.Naklejka" required asp-for="Naklejka">
-                                    <option value="-1">Etykieta</option>
+                                <select id="etykieta" class="form-select" asp-items="@ViewBag.Naklejka" required asp-for="Naklejka">
+                                    <option value="-1" id="optionEtykieta">Etykieta</option>
                                 </select>
                             </div>
                             <div class="form-group" id="buttonsSection">
                                 <div class="col text-center">
-                                    <input type="submit" value="Save" id="submitButton" class="btn btn-primary" />
+                                    <input type="submit" value="Save" disabled  id="submitButton" class="btn btn-primary" />
                                 </div>
+                                <span id="warningTextForOrder" style="color:red; font-size:small; font-style:normal"></span>
                             </div>
 
                         </div>
@@ -171,17 +183,6 @@
                                 </table>
                             </div>
                         </div>
-                        <div class="modal fade" id="alertModal" style="height: min-content; margin-top:-30px !important;" tabindex="-1" aria-labelledby="title" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered" id="dialog">
-                                <div class="modal-content" style="background-color: transparent;border:none">
-
-                                    <div class="modal-body" style="background-color: transparent">
-                                        <p style="text-align: center; color: green; ">Copied</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
                     </form>
 
                 </div>
@@ -190,7 +191,22 @@
     </div>
 
 </main>
+<footer>
+    <div class="col text-center">
+        <div class="modal fade" id="alertModal" style="height: min-content; " tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content" style="background-color: transparent;border:none">
 
+                    <div class="modal-body" style="background-color: transparent">
+                        <p style="text-align: center; color: green; ">Copied</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</footer>
 
 
 
@@ -211,13 +227,23 @@
         var regExp = /[0-9][0-9][0-9][0-9][0-9][0-9][0-9]/;
         var button = document.getElementById("addList");
         var number = document.getElementById('numberCount');
+        var count = document.getElementById('count');
+        var numerZlecenia = document.getElementById('nrZlecenia');
+
         var num = 1;
         $(document).ready(function () {
             $('#zlecenie').modal({ backdrop: 'static', keyboard: false });
             $('#details').modal({ backdrop: 'static', keyboard: false });
             $('#closeNewZlecenie').click(function () {
                 document.getElementById('noweZlecenie').reset();
-            })
+                numerZlecenia.value = '';
+                $('#warningTextForOrder').text("");
+                $('#warning').text("");
+                $('#warningCount').text('');
+                $('#submitButton').attr('disabled', 'true');
+            });
+
+            InputEvent();
             daTable = $('#zlecenia').DataTable({
                 dom: 'Bfrtip',
                 ajax: {
@@ -231,7 +257,7 @@
                     { className: 'dt-body-center', targets: [0, 1, 2, 3, 4] },
                     {
                         targets: [1, 2, 3, 4],
-                        className: 'dt-head-center'
+                        className: 'dt-head-center '
                     },
                     {
                         targets: 0,
@@ -270,21 +296,89 @@
                     cell.innerHTML = i + 1;
                 });
             }).draw();
+
+            count.addEventListener('input', function () {
+                this.value = this.value.trim().slice(0, 4);
+                numerZlecenia.value = numerZlecenia.value.trim().slice(0, 7);
+                var inputValue = numerZlecenia.value;
+                if (this.value > 500 && this.value < 3000 ) {
+                    $('#warningCount').text('');
+                    DefaultCheck(inputValue);
+                }
+                else {
+                    $('#submitButton').attr('disabled', 'true');
+                    $('#warningCount').text('Prosze sprawdzić ilość!')
+                }
+            })
+        })
+        function Check(id) {
+            return $(id +' option:selected').val() != -1;
+        }
+        function InputEvent() {
             document.getElementById('nrZlecenia').addEventListener('keyup', function () {
+                this.value = this.value.trim().slice(0, 7);
+                var inputValue = this.value;
+                if (inputValue.length == 7) {
+                    $.ajax({
+                        type: 'Get',
+                        url: 'Home/GetZlecenie/',
+                        dataType: 'json',
+                        data: { 'numerZlecenia': inputValue },
+                        success: function (data) {
+                            if (data['result'] == true) {
+                                $('#warning').text("Zlecenie zrealizowane albo taki numer zlecenia już istnieje!")
+                                $('#submitButton').attr('disabled', 'true');
+                            }
+                            else {
+                                $('#warning').text("");
+                                if (Check('#recipies') && Check('#opakowanie') && Check('#dekel') && Check('#etykieta') && count.value > 500 && count.value < 3000) {
+                                    $('#submitButton').removeAttr('disabled');
+                                    $('#warningTextForOrder').text("");
+                                }
+                                else {
+                                    $('#submitButton').attr('disabled', 'true');
+                                    $('#warningTextForOrder').text('Prosze dokładnie sprawdzić czy wszystkie opcje są wybrane!');
+                                }
+                            }
+                        }
+                    })
+                } else {
+                    $('#submitButton').attr('disabled', 'true');
+                }
+
+            });
+            $('select').on('change', function () {
+                numerZlecenia.value = numerZlecenia.value.trim().slice(0, 7);
+                var inputValue = numerZlecenia.value;
+                DefaultCheck(inputValue);
+            })
+        }
+        function DefaultCheck(input) {
+            if (input.length == 7 && Check('#recipies') && Check('#opakowanie') && Check('#dekel') && Check('#etykieta')) {
                 $.ajax({
                     type: 'Get',
-                    url: '~/Home/GetZlecenie' + this.value,
+                    url: 'Home/GetZlecenie/',
+                    dataType: 'json',
+                    data: { 'numerZlecenia': input },
                     success: function (data) {
-                        if (data['result'] = true) {
-                            $('#warning').text("Zlecenie zrealizowane!")
+                        if (data['result'] == true) {
+                            $('#warning').text("Zlecenie zrealizowane albo taki numer zlecenia już istnieje!")
+                            $('#submitButton').attr('disabled', 'true');
                         }
                         else {
-                            $('#warning').text("")
+                            $('#warning').text("");
+                            $('#submitButton').removeAttr('disabled');
+                            $('#warningTextForOrder').text("");
                         }
                     }
                 })
-            });
-        })
+                $('#warningTextForOrder').text("");
+            }
+            else {
+                $('#submitButton').attr('disabled', 'true');
+                $('#warningTextForOrder').text('Prosze dokładnie sprawdzić czy wszystkie opcje są wybrane!');
+            }
+        }
         function Reset(input) {
             input.empty();
         }
@@ -353,22 +447,6 @@
                 document.getElementById('naklejka').hidden = true;
                 document.getElementById('add').hidden = true;
             }
-            /*
-                if (value = 2) {
-                $('#opakowanie').removeAttr('hidden');
-            }
-            else if (value = 3) {
-                $('#pokrywa').removeAttr('hiidden');
-            }
-            else if (value = 4) {
-                $('#naklejka').removeAttr('hidden');
-            }
-            else {
-                document.getElementById('opakowanie').hidden = true;
-                document.getElementById('pokrywa').hidden = true;
-                document.getElementById('naklejka').hidden = true;
-            }
-              */
         }
         function RemoveList(input) {
             var value = parseInt(input.value);
@@ -376,7 +454,6 @@
                 document.getElementById('pokrywa').hidden = true;
                 document.getElementById('add').hidden = false;
                 input.value = value - 1;
-                //document.getElementById('remove').hidden = true;
             }
             else if (value == 1) {
                 document.getElementById('opakowanie').hidden = true;
@@ -397,14 +474,6 @@
                     $('#detailsNrZlecenia').val(data['details']['nrZlecenia']);
                     $('#detailsReceptura').val(data['details']['recipesName']);
                     $('#totalCount').val(data['details']['count']);
-                    /*
-                    for (var i = 0; i < data['opakowania'].length; i++) {
-                        $('#numerMaterialu').append("<tr><td id='matNumber_" + i + "' onclick='Copy($(this))'>" + data['opakowania'][i]['materialNumber'] + "</td><td>" + data['opakowania'][i]['name'] + "</td></tr>");
-                    }
-                    for (var i = 0; i < data['ingredients'].length; i++) {
-                        $('#numerMaterialu').append("<tr><td id='matNumber__" + i + "' onclick='Copy($(this))'>" + data['ingredients'][i]['materialNumber'] + "</td><td>" + data['ingredients'][i]['name'] + "</td></tr>");
-                    }
-                   */
                     $.each(data['items'], function (index, value) {
                         if (data['items'][index]['item1'] != 0) {
                             $('#numerMaterialu').append("<tr><td id='matNumber_" + index + "' onclick='Copy($(this))'>" + data['items'][index]['item1'] + "</td><td>" + data['items'][index]['item2'] +
@@ -426,7 +495,38 @@
             $('#alertModal').modal('show');
             setTimeout(function () {
                 $('#alertModal').modal('hide');
-            }, 1500);
+            }, 1000);
         }
+        function Delete(id) {
+                Swal.fire({
+                title: 'Delete this order?',
+                text: "You won't be able to revert this!",
+                icon: 'question',
+                showCancelButton: true,
+                showConfirmButton: true,
+                cancelButtonText: 'Back',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+                        }).then((result) => {
+            if (result.isConfirmed) {
+                    $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("Delete", "Home")/' + id,
+                    success: function(data) {
+                        if (data.success) {
+                            $('#zlecenia').DataTable().ajax.reload(null, false);
+                        }
+                    }
+                })
+                    Swal.fire(
+                        'Removed!',
+                        'Bin has been removed.',
+                        'success'
+                    )
+                }
+                })
+        }
+
     </script>
 }

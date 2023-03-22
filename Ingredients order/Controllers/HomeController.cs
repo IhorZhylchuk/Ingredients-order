@@ -22,8 +22,9 @@ namespace Ingredients_order.Controllers
 
         public JsonResult GetZlecenie(int numerZlecenia)
         {
-            var search = _dbContext.Items.Find(numerZlecenia);
+            var search = _dbContext.Items.Select(i => i.NrZlecenia).ToList().Any(i => i == numerZlecenia);
             return Json(new { result = search });
+            //return Json(numerZlecenia);
         }
         public JsonResult GetZlecenia()
         {
@@ -389,6 +390,13 @@ namespace Ingredients_order.Controllers
                 return Json(3);
             }
 
+        }
+        public async Task<IActionResult> Delete(int id)
+        {
+            var result = _dbContext.Items.Where(b => b.Id == id).FirstOrDefault();
+            _dbContext.Items.Remove(result);
+            await _dbContext.SaveChangesAsync();
+            return Json(new { success = true, message = "Removed successfully" });
         }
     }
 }
