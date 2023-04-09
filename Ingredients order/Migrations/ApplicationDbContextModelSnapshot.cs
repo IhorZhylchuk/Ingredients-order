@@ -454,6 +454,9 @@ namespace Ingredients_order.Migrations
                     b.Property<int>("MachineId")
                         .HasColumnType("int");
 
+                    b.Property<long>("Palett")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("ProcessId")
                         .HasColumnType("int");
 
@@ -490,6 +493,9 @@ namespace Ingredients_order.Migrations
                     b.Property<int>("MachineId")
                         .HasColumnType("int");
 
+                    b.Property<long>("Palett")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("ProcessId")
                         .HasColumnType("int");
 
@@ -511,18 +517,21 @@ namespace Ingredients_order.Migrations
                     b.Property<int>("Ilość")
                         .HasColumnType("int");
 
+                    b.Property<int>("IngredientId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Localization")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("MaterialId")
-                        .HasColumnType("int");
 
                     b.Property<long>("PalletNumber")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("MaterialId");
+                    b.HasIndex("IngredientId");
 
                     b.ToTable("PalettModel");
                 });
@@ -823,7 +832,9 @@ namespace Ingredients_order.Migrations
                 {
                     b.HasOne("Ingredients_order.Models.Ingredient", "Material")
                         .WithMany()
-                        .HasForeignKey("MaterialId");
+                        .HasForeignKey("IngredientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Material");
                 });

@@ -53,7 +53,7 @@
                    class="list-group-item list-group-item-action py-2 ripple">
                     <i class="fas fa-chart-pie fa-fw me-3"></i><span>Zamówienia</span>
                 </a>
-                <a href="~/Home/Warehouse"
+                <a href="~/Warehouse/WareHouseCount"
                    class="list-group-item list-group-item-action py-2 ripple">
                     <i class="fas fa-chart-pie fa-fw me-3"></i><span>Magazyn</span>
                 </a>
@@ -321,7 +321,8 @@
                 if (inputValue.length == 7) {
                     $.ajax({
                         type: 'Get',
-                        url: 'Home/GetZlecenie/',
+                        url: '@Url.Action("GetZlecenie", "Home")/',
+                        //url: 'Home/GetZlecenie/',
                         dataType: 'json',
                         data: { 'numerZlecenia': inputValue },
                         success: function (data) {
@@ -357,7 +358,8 @@
             if (input.length == 7 && Check('#recipies') && Check('#opakowanie') && Check('#dekel') && Check('#etykieta')) {
                 $.ajax({
                     type: 'Get',
-                    url: 'Home/GetZlecenie/',
+                    url: '@Url.Action("GetZlecenie", "Home")/',
+                    //url: 'Home/GetZlecenie/',
                     dataType: 'json',
                     data: { 'numerZlecenia': input },
                     success: function (data) {

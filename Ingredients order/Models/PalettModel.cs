@@ -9,9 +9,11 @@ namespace Ingredients_order.Models
     {
         public int Id { get; set; }
         public long PalletNumber { get; set; }
+        public int IngredientId { get; set; }
         public Ingredient Material { get; set; }
         public int Ilość { get; set; }
         public string Localization { get; set; }
+        public string Status { get; set; }
         
     }
 }

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ingredients_order.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230321215521_Initial_4")]
-    partial class Initial_4
+    [Migration("20230328154828_Initial_2")]
+    partial class Initial_2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -456,6 +456,9 @@ namespace Ingredients_order.Migrations
                     b.Property<int>("MachineId")
                         .HasColumnType("int");
 
+                    b.Property<long>("Palett")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("ProcessId")
                         .HasColumnType("int");
 
@@ -492,6 +495,9 @@ namespace Ingredients_order.Migrations
                     b.Property<int>("MachineId")
                         .HasColumnType("int");
 
+                    b.Property<long>("Palett")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("ProcessId")
                         .HasColumnType("int");
 
@@ -521,6 +527,9 @@ namespace Ingredients_order.Migrations
 
                     b.Property<long>("PalletNumber")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

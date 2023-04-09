@@ -7,7 +7,7 @@ namespace Ingredients_order.Models
 {
     public class NewOrder: DefaultForOrders
     {
-
+       // public long Palett { get; set; }
     }
     public class OrdersForWarehouse : DefaultForOrders
     {
@@ -23,5 +23,7 @@ namespace Ingredients_order.Models
         public string Status { get; set; }
         public int IngredientNumber { get; set; }
         public double Count { get; set; }
+        public long Palett { get; set; }
     }
 }
+

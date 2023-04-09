@@ -1,0 +1,62 @@
+﻿@model PalettModel;
+@{
+    Layout = null;
+}
+@using (Html.BeginForm("Consumption", "MachineProcess", FormMethod.Post))
+{
+        <div class="modal-header">
+            <h5 class="modal-title" id="title">Konsumpcja materialów</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" id="closeConsumption" aria-label="Close"></button>
+
+        </div>
+
+        <div class="modal-body">
+
+            <form id="consumption">
+
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <label for="process" class="col-sm-2 col-form-label">Numer palety:</label>
+                        <div class="col-sm-6">
+                            <input class="form-control" readonly id="numerPalety" asp-for="PalletNumber" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="process" class="col-sm-2 col-form-label">Numer materialu:</label>
+                        <div class="col-sm-6">
+                            <input class="form-control" readonly id="numerPalety" asp-for="Material.MaterialNumber" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="process" class="col-sm-2 col-form-label">Material:</label>
+                        <div class="col-sm-6">
+                            <input class="form-control" readonly id="material" asp-for="Material.Name" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="process" class="col-sm-2 col-form-label">Lokalizacja:</label>
+                        <div class="col-sm-6">
+                            <input class="form-control" readonly id="localisation" asp-for="Localization" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="process" class="col-sm-2 col-form-label">Ilość:</label>
+                        <div class="col-sm-6">
+                            <input id="totalCount" class="form-control" asp-for="Ilość" />
+                        </div>
+                    </div>
+                    <div class="form-group" id="buttonsSection">
+                        <div class="col text-center">
+                            <a id="konsumpcja" style="position:center" class="btn btn-primary">Konsumpcja</a>
+                            <a id="reverse" class="btn btn-primary">Reverse</a>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col text-center">
+                            <a id="konsumpcja" style="position:center" class="btn btn-primary">Zakończ</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+}

@@ -33,7 +33,7 @@
                    class="list-group-item list-group-item-action py-2 ripple">
                     <i class="fas fa-chart-pie fa-fw me-3"></i><span>Zamówienia</span>
                 </a>
-                <a href="~/Home/Warehouse"
+                <a href="~/Warehouse/WareHouseCount"
                    class="list-group-item list-group-item-action py-2 ripple active">
                     <i class="fas fa-chart-pie fa-fw me-3"></i><span>Magazyn</span>
                 </a>
@@ -59,15 +59,16 @@
     <div class="container" style="width:100%">
         <div class="form-group">
             <table class="table table-striped table-bordered display" id="warehouse">
-                <thead >
+                <thead>
                     <tr>
                         <th></th>
+                        <th id="nPalety" class="bolded">Nr. palety</th>
                         <th id="nMaterialu" class="bolded">Nr. materialu</th>
                         <th id="nazwa" class="bolded">Nazwa produktu</th>
-                        <th id="count"class="bolded">Ilość (kg/szt.)</th>
-                        <th id="dataZamówienia"class="bolded">Data zamówienia</th>
-                        <th id="dataRealizacji"class="bolded">Data realizacji</th>
-                        <th id="status"class="bolded">Status zamówienia</th>
+                        <th id="count" class="bolded">Ilość (kg/szt.)</th>
+                        <th id="dataZamówienia" class="bolded">Data zamówienia</th>
+                        <th id="dataRealizacji" class="bolded">Data realizacji</th>
+                        <th id="status" class="bolded">Status zamówienia</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -105,49 +106,50 @@
                         className: 'dt-head-center'
                     },
                     //{ className: 'font-weight-bold', targets: [0, 1, 2, 3, 4, 5, 6, 7] },
-                    { className: 'dt-body-center', targets: [0, 1, 2, 3, 4, 5, 6, 7] },
+                    { className: 'dt-body-center', targets: [0, 1, 2, 3, 4, 5, 6, 7, 8] },
                     {
                         targets: 0,
-                        width: '4%'
+                        width: '5%'
                     },
                     {
                         targets: 1,
-                        width: '15%'
+                        width: '18%'
                     },
                     {
                         targets: 2,
-                        width: '20%'
+                        width: '14%'
                     },
                     {
-                        targets: [3, 4, 5, 6],
+                        targets: [3, 4, 5, 6, 7],
                         width: '9%'
                     },
                     {
-                        targets: [7],
-                        width: '15%'
+                        targets: [8],
+                        width: '18%'
                     }
 
                 ],
 
                 columns: [
                     { data: null, "sortable": false },
-                    { data: "item1" },
-                    { data: "item2" },
-                    { data: "item3" },
-                    { data: "item6" },
-                    { data: "item7" },
-                    { data: "item4" },
+                    { data: "numerPalety" },
+                    { data: "ingredientNumber" },
+                    { data: "ingredientName"},
+                    { data: "count" },
+                    { data: "dataZamówienia" },
+                    { data: "dataRealizacji" },
+                    { data: "status" },
                     {
-                        data: "item5", "render": function (data) {
+                        data: "id", "render": function (data) {
                             var result = null;
-                                $.ajax({
+                            $.ajax({
                                 type: 'Get',
                                 url: '/Home/GetStatus/' + parseInt(data),
                                 async: false,
                                 success: function (data) {
                                     result = data;
-                                    }
-                                })
+                                }
+                            })
                             if (result == "W trakcie realizacji") {
                                 return "<div class='dropdown'><button class='btn btn-secondary dropdown-toggle' type='button' id='dropdownMenu' data-bs-toggle='dropdown' aria-expanded='false'>Zmień status</button><ul class='dropdown-menu' aria-labelledby='dropdownMenu'><li><a class='dropdown-item' onclick='Status(" + data + ")'>Dostarczone</a></li></ul></div>"
                             }
@@ -155,7 +157,7 @@
                                 return "<div><a class='btn btn-danger btn-small' style='height: 5 %' onclick='Delete(" + data + ")'>Usuń</a></div>";
                             }
                             else {
-                                alert(data.responseText);
+                                alert("Some Error occured!");
                             }
                         },
                         orderable: false,

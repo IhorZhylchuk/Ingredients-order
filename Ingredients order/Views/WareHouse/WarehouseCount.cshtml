@@ -46,7 +46,7 @@
                    class="list-group-item list-group-item-action py-2 ripple">
                     <i class="fas fa-chart-pie fa-fw me-3"></i><span>Zamówienia</span>
                 </a>
-                <a href="~/Warehouse/Warehouse"
+                <a href="~/Warehouse/WareHouseCount"
                    class="list-group-item list-group-item-action py-2 ripple active">
                     <i class="fas fa-chart-pie fa-fw me-3"></i><span>Magazyn</span>
                 </a>
@@ -86,7 +86,6 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <input id="inputPalletNumber" placeholder="Prosze wpisać numer palety" class="form-control" min="10" maxlength="10" required  asp-for="PalletNumber" />
-                                <span id="warningText" style="color:red; font-size:small; font-style:normal"></span>
                             </div>
                             <div class="form-group">
                                 <select id="selectMaterialName" class="form-select" required asp-items="@ViewBag.MaterialNames">
@@ -99,9 +98,12 @@
                             <div class="form-group">
                                 <input id="inputMaterialCount"  placeholder="Kg" required class="form-control" asp-for="Ilość" />
                             </div>
+                            <div class="form-group">
+                                <span id="warningText" style="color:red; font-size:small; font-style:normal"></span>
+                            </div>
                             <div class="form-group" id="buttonsSection">
                                 <div class="col text-center">
-                                    <input type="submit" value="Submit" id="submitButton" class="btn btn-primary" />
+                                    <input type="submit" value="Submit" disabled id="submitButton" class="btn btn-primary" />
                                 </div>
                             </div>
 
@@ -150,10 +152,17 @@
                     url: '/WareHouse/GetMaterial',
                     data: { 'materilName': $('#selectMaterialName option:selected').text() },
                     success: function (data) {
-                        if (data['number'] != null && data['number'] != 0) {
-                            $('#inputMaterialNumber').val(data['number']);
+                       //->изначально if (data['number'] != null && data['number'] != 0) {
+                            if (data['number'] != null && data['number'] != 0) {
+                                $('#inputMaterialNumber').val(data['number']);
+                                $('#submitButton').removeAttr('disabled');
+                                $('#warningText').text('');
+
                         } else {
-                            $('#inputMaterialNumber').val('');
+                                $('#inputMaterialNumber').val('');
+                                $('#submitButton').attr('disabled', 'true');
+                                $('#warningText').text('Prosze dokładnie sprawdzić prawidłowość wszystkich danych!');
+
                         }
                     }
                 })
@@ -230,11 +239,13 @@
                         data: { 'number': this.value },
                         success: function (data) {
                             //  alert(data['result']);
-                            if (data['result'] != true && data['result'] != null) {
+                            if (data['result'] != true && data['result'] != null && $('#selectMaterialName option:selected').val() != -1) {
                                 $('#submitButton').removeAttr('disabled');
+                                $('#warningText').text('');
                             }
                             else {
                                 $('#submitButton').attr('disabled', 'true');
+                                $('#warningText').text('Prosze dokładnie sprawdzić prawidłowość wszystkich danych!');
                             }
                         }
                     })

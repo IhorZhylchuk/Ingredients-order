@@ -22,7 +22,7 @@ namespace Ingredients_order.Controllers
         public IActionResult WareHouseCount()
         {
             var materials = _dbContext.Ingredients.Select(i => i).ToList();
-            ViewBag.MaterialNames = new SelectList(materials.Select(n => new {n.Id, n.Name}).ToList(), "Id", "Name");
+            ViewBag.MaterialNames = new SelectList(materials.Where(n => n.Name != "Woda").Select(n => new {n.Id, n.Name}).ToList(), "Id", "Name");
             return View();
         }
         public JsonResult GetPallets()
@@ -47,23 +47,45 @@ namespace Ingredients_order.Controllers
         [HttpPost]
         public async Task<IActionResult> PalletAdding(PalettModel pallet)
         {
-            var ingredient = _dbContext.Ingredients.Where(n => n.MaterialNumber == pallet.Material.MaterialNumber).Select(i => i).FirstOrDefault();
-            PalettModel newPallet = new PalettModel
+            try
             {
-                Ilość = pallet.Ilość,
-                Localization = "Magazyn",
-                Material = ingredient,
-                PalletNumber = pallet.PalletNumber,
-                
-            };
-            _dbContext.PalettModel.Add(newPallet);
-            await _dbContext.SaveChangesAsync();
+                var ingredient = _dbContext.Ingredients.Where(n => n.MaterialNumber == pallet.Material.MaterialNumber).Select(i => i).First();
+                PalettModel newPallet = new PalettModel
+                {
+                    Ilość = pallet.Ilość,
+                    Localization = "Magazyn",
+                    Material = ingredient,
+                    PalletNumber = pallet.PalletNumber,
+                    Status = "Free to use"
+                };
+                _dbContext.PalettModel.Add(newPallet);
+                await _dbContext.SaveChangesAsync();
+                return RedirectToAction("WareHouseCount");
+            }
+            catch (Exception e)
+            {
+                e.Message.ToString();
+            }
             return RedirectToAction("WareHouseCount");
+
         }
         public JsonResult GetMaterial(string materilName)
         {
             var materialNumber = _dbContext.Ingredients.Where(n => n.Name == materilName).Select(n => n.MaterialNumber).SingleOrDefault();
             return Json(new { number = materialNumber });
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteOrder(int id)
+        {
+            if (id != 0)
+            {
+                _dbContext.OrdersForWarehouse.Remove(_dbContext.OrdersForWarehouse.Where(i => i.Id == id).FirstOrDefault());
+                await _dbContext.SaveChangesAsync();
+
+                return Ok();
+            }
+            return NotFound();
+
         }
     }
 }

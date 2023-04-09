@@ -110,7 +110,7 @@
                    class="list-group-item list-group-item-action py-2 ripple active" id="zamówieniaButton">
                     <i class="fas fa-chart-pie fa-fw me-3"></i><span>Zamówienia</span>
                 </a>
-                <a href="~/Home/Warehouse"
+                <a href="~/Warehouse/WareHouseCount"
                    class="list-group-item list-group-item-action py-2 ripple" id="magazyn">
                     <i class="fas fa-chart-pie fa-fw me-3"></i><span>Magazyn</span>
                 </a>
@@ -171,6 +171,7 @@
             <thead>
                 <tr>
                     <th style="text-align: center"></th>
+                    <th id="nrPalety">Nr.palety</th>
                     <th id="nMaterialu">Nr. materialu</th>
                     <th id="nazwa">Nazwa produktu</th>
                     <th id="count">Ilość (kg/szt.)</th>
@@ -213,13 +214,13 @@
                                 <div class="form-group row">
                                     <label for="nrMaterialu" class="col-sm-2 col-form-label">Numer materialu</label>
                                     <div class="col-sm-6">
-                                        <input class="form-control" id="nrMaterialu" placeholder="Wpisz numer materialu" />
+                                        <input class="form-control" type="number" id="nrMaterialu" placeholder="Wpisz numer materialu" />
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="ilość" class="col-sm-2 col-form-label">Ilość</label>
                                     <div class="col-sm-6">
-                                        <input class="form-control" id="ilość" placeholder="Wpisz ilość zamawianego materialu" />
+                                        <input class="form-control" id="ilość" type="number" placeholder="Wpisz ilość zamawianego materialu" />
                                     </div>
                                     <div class="col-sm-12">
                                         <span id="warningText" style="color:red; font-size:small; font-style:normal"></span>
@@ -260,6 +261,26 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="form-group" id="inputFormForNumber">
+                                    <p style="font-weight:bold" id="message">albo wpisz numer materialu</p>
+                                    <div class="form-group row">
+                                        <label for="materialNumber" class="col-sm-2 col-form-label">Numer materialu</label>
+                                        <div class="col-sm-6">
+                                            <input class="form-control" id="materialNumber" type="number" required placeholder="Wpisz numer materialu" />
+                                        </div>
+                                        <span id="warningTextForMaterialNumber" style="color:red; font-size:small; font-style:normal"></span>
+
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="ilość" class="col-sm-2 col-form-label">Ilość</label>
+                                        <div class="col-sm-6">
+                                            <input class="form-control" id="materialCount" type="number" required placeholder="Wpisz ilość zamawianego materialu" />
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <span id="warningText" style="color:red; font-size:small; font-style:normal"></span>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="modal-footer" style="width:100%">
                                     <div class="form-group" style="width:100%">
                                         <div class="col text-center">
@@ -289,6 +310,75 @@
             </div>
         </div>
     </section>
+    <div class="modal hide fade" id="consumption" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="title" aria-hidden="true">
+        <div class="modal-dialog modal-m">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="title">Konsumpcja materialów</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="closeConsumption" aria-label="Close"></button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <form id="consumption">
+
+                        <div class="modal-body">
+                            <div class="form-group row">
+                                <label for="process" class="col-sm-4 col-form-label">Numer palety:</label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" readonly id="numerPalety" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="process" class="col-sm-4 col-form-label">Numer materialu:</label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" readonly id="numerMaterialu" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="process" class="col-sm-4 col-form-label">Material:</label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" readonly id="material" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="process" class="col-sm-4 col-form-label">Lokalizacja:</label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" readonly id="lokalizacja" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="process" class="col-sm-4 col-form-label">Ilość:</label>
+                                <div class="input-group " style="display:table;">
+                                    <div class="col-sm-2" style="display: table-cell;">
+                                        <input class="form-control" type="number" readonly id="totalCount" />
+                                        <input id="check" hidden/>
+                                    </div>
+                                    <div class="col-sm-2" style="display: table-cell;">
+                                        <input class="form-control" type="number" id="valueInput" />
+                                    </div>
+                                </div>
+                                <span id="warningTextForCount" style="color:red; font-size:small; font-style:normal"></span>
+                            </div>
+
+                            <div class="form-group" id="buttonsSection">
+                                <div class="col text-center">
+                                    <a id="konsumpcja" style="position:center" onclick="Konsumpcja()" class="btn btn-primary">Konsumpcja</a>
+                                    <a id="reverse" class="btn btn-primary" onclick="Reverse()">Reverse</a>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col text-center">
+                                    <a id="konsumpcja" style="position:center" onclick="PalletUpdate()" class="btn btn-primary">Zapisz</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </main>
 
@@ -355,7 +445,26 @@
 
                     });
 
+            /*
+            GetDoc('konsumpcja').addEventListener('keyup', function () {
+                if (this.value.length == 0) {
+                    $('#warningTextForCount').text('');
+                }
+            });
+            GetDoc('reverse').addEventListener('keyup', function () {
+                if (this.value.length == 0) {
+                    $('#warningTextForCount').text('');
+                }
+            });
+            */
+            HideBoxSection('materialNumber', 'input', 7);
+            HideBoxSection('materialNumber', 'keyup', 7);
+            HideBoxSection('materialCount', 'keyup', 4);
 
+            $('#closeNewZlecenie').click(function () {
+                document.getElementById('noweZamówienie').reset();
+                document.location.reload();
+            });
         $('#newOrder').modal({ backdrop: 'static', keyboard: false });
         const popover = new bootstrap.Popover(document.querySelector('.callPopover'), {
             container: '.modal-content',
@@ -394,21 +503,6 @@
 
                 }
             })
-           /* $('#dropdownMenuButton').on('click', function () {
-
-                var num = $('#count').val();
-                if (num == 0) {
-                    RemHidden('#list');
-                    RemHidden('#list2');
-                    $('#count').val(num + 1);
-                } else {
-                    Hidden('#list');
-                    Hidden('#list2');
-                    $('#count').val(num - 1);
-                    $('.form-check-input').prop('checked', false);
-                }
-
-            }) */
         })
         TableUpdate();
         $('select').on('change', function () {
@@ -441,7 +535,6 @@
                     proces.value = $('#processList option:selected').text();
                     machine.value = $('#machinesList option:selected').text();
                     nrZlecenia.value = $('#zleceniaList option:selected').text();
-
                     if (data['num'] == 0) {
                         RemHidden('#enterNumberSection');
                         GetDoc('ilość').addEventListener('keyup', function () {
@@ -483,30 +576,38 @@
                         $.each(data['items'], function (index, value) {
                             if (data['items'] != null) {
                                 if (index % 2 == 0) {
-                                    $('#list').append("<li class='list-group-item'><input class='form-check-input' value='" + data['items'][index]['item1'] + "' type='checkbox' id='ingredient1" + index + "' />" +
+                                    $('#list').append("<li class='list-group-item'><input name='checkBox' class='form-check-input' value='" + data['items'][index]['item1'] + "' type='checkbox' id='ingredient1" + index + "' />" +
                                         "<label class='form-check-label' for='Check' id='label' style='margin-left:10px;'>" + data['items'][index]['item2'] + "</label></li > ")
                                 }
                                 else {
-                                    $('#list2').append("<li class='list-group-item'><input class='form-check-input' value='" + data['items'][index]['item1'] + "' type='checkbox' id='ingredient2"+index+"' />" +
+                                    $('#list2').append("<li class='list-group-item'><input name='checkBox' class='form-check-input' value='" + data['items'][index]['item1'] + "' type='checkbox' id='ingredient2"+index+"' />" +
                                         "<label class='form-check-label' for='Check' id='label' style='margin-left:10px;'>" + data['items'][index]['item2'] + "</label></li > ")
                                 }
                             }
                         })
-
-
                         $.each(data['opakowania'], function (index, value) {
                             if (data['opakowania'][index] != null) {
                                 if (index % 2 == 0) {
-                                    $('#list').append("<li class='list-group-item'><input class='form-check-input' value='" + data['opakowania'][index]['materialNumber'] + "' type='checkbox' id='ingredient3" + index + "' />" +
+                                    $('#list').append("<li class='list-group-item'><input name='checkBox' class='form-check-input' value='" + data['opakowania'][index]['materialNumber'] + "' type='checkbox' id='ingredient3" + index + "' />" +
                                         "<label class='form-check-label' for='Check' id='label' style='margin-left:10px;'>" + data['opakowania'][index]['name'] + "</label></li > ")
                                 }
                                 else {
-                                    $('#list2').append("<li class='list-group-item'><input class='form-check-input' value='" + data['opakowania'][index]['materialNumber'] + "' type='checkbox' id='ingredient4"+index+"' />" +
+                                    $('#list2').append("<li class='list-group-item'><input name='checkBox' class='form-check-input' value='" + data['opakowania'][index]['materialNumber'] + "' type='checkbox' id='ingredient4"+index+"' />" +
                                         "<label class='form-check-label' for='Check' id='label' style='margin-left:10px;'>" + data['opakowania'][index]['name'] + "</label></li > ")
                                 }
                             }
                         })
 
+                        GetMaterialNumber('input');
+                        GetMaterialNumber('keyup');
+
+                        $('input[name=checkBox]').change(function () {
+                            if (this.checked) {
+                                Hidden('#inputFormForNumber');
+                            } else {
+                                RemHidden('#inputFormForNumber');
+                            }
+                        });
                     }
                 }
             })
@@ -518,8 +619,6 @@
             var machine = sessionStorage.getItem("Machines");
             var machineValues = sessionStorage.getItem("Values");
             var optionSelected = sessionStorage.getItem("Option");
-
-
             if (selItem == null && process == null) {
                 $('#zleceniaList').val('-1');
                 $('#processList').val('-1');
@@ -548,6 +647,44 @@
             }
 
         }
+        function Konsumpcja() {
+            var value = GetDoc('valueInput').value;
+            var total = GetDoc('totalCount').value;
+            $('#warningTextForCount').text('');
+
+            var res = parseInt(total) - parseInt(value);
+
+            if (res < 0) {
+                $('#warningTextForCount').text('Prosze dokładnie sprawdzić prawidłowość wpisywanych danych!')
+            }
+            else {
+                $('#warningTextForCount').text('');
+                GetDoc('totalCount').value = res;
+                $('#valueInput').val('');
+            }
+
+        }
+        function Reverse() {
+            var value = GetDoc('valueInput').value;
+            var total = GetDoc('totalCount').value;
+            var check = GetDoc('check').value;
+
+            var res = parseInt(total) + parseInt(value);
+
+            if (value.length == 0) {
+                $('#warningTextForCount').text('');
+            }
+            if (res > check) {
+                $('#warningTextForCount').text('Na palecie nie może być więcej materialu niż przed początkiem zlecenia!')
+            }
+            else {
+                $('#warningTextForCount').text('');
+                GetDoc('totalCount').value = res;
+                $('#valueInput').val('');
+            }
+
+
+        }
         function SelectBoxes() {
             var num = $('#count').val();
             if (num == 0) {
@@ -561,10 +698,25 @@
                 $('.form-check-input').prop('checked', false);
             }
         }
+        function HideBoxSection(id, type, number) {
+            document.getElementById(id).addEventListener(type, function () {
+                this.value = this.value.trim().slice(0, number);
+                if (this.value > 0) {
+                    Hidden('#list');
+                    Hidden('#list2');
+                    Hidden('#dropdownMenuButton');
+                    Hidden('#message');
+                }
+                else {
+                    RemHidden('#dropdownMenuButton');
+                    RemHidden('#message');
+                }
+            })
+        }
         function EmptyContainer() {
             $('#container').empty();
             var table = "<table id='orders' class='table table-striped table-bordered display' style='width: 100%; margin-top: 50px;'>" +
-                "<thead><tr><th></th><th id='nMaterialu'>Nr. materialu</th>" +
+                "<thead><tr><th></th><th id='nrPalety'>Nr.palety</th><th id='nMaterialu'>Nr. materialu</th>" +
                 "<th id='nazwa'>Nazwa produktu</th><th id='count'>Ilość (kg/szt.)</th>" +
                 "<th></th></tr ></thead ></table>";
             $('#container').html(table);
@@ -592,14 +744,14 @@
                 },
                 rowId: 'Id',
                 columnDefs: [
-                    { className: 'dt-body-center', targets: [0, 1, 2, 3, 4] },
+                    { className: 'dt-body-center', targets: [0, 1, 2, 3, 4, 5] },
                     {
-                        targets: [1, 2, 3, 4],
+                        targets: [1, 2, 3, 4, 5],
                         className: 'dt-head-center'
                     },
                     {
                         targets: 0,
-                        width: '8%'
+                        width: '4%'
                     },
                     {
                         targets: [1],
@@ -607,16 +759,20 @@
                     },
                     {
                         targets: [2],
-                        width: '25%'
+                        width: '17%'
                     },
                     {
                         targets: [3],
-                        width: '15%'
+                        width: '17%'
                     },
 
                     {
                         targets: [4],
-                        width: '32%'
+                        width: '13%'
+                    },
+                    {
+                        targets: [5],
+                        width: '29%'
                     }
 
                 ],
@@ -632,6 +788,7 @@
                             }
                         }
                     },
+                    { data: "item6" },
 
                     {
                         data: "item1",
@@ -641,8 +798,8 @@
                     { data: "item3" },
 
                     {
-                        data: "id", "render": function (data) {
-                            return "<div style='width:100%; position: center'><div class='btn-group' role='group' id='groupButton'><a class='btn btn-success btn-small' style = 'height: 5%; margin-left: 5px; margin-right: 5px;' data-toggle='modal' onclick='Details(" + data + ")'>Szczegóły</a><a class='btn btn-danger btn-small' style='height: 5 %' onclick=Delete(" + data + ") id='Delete' >Usuń zlecenie</a></div ></div >"
+                        data: "item6", "render": function (data) {
+                            return "<div style='width:100%; position: center'><div class='btn-group' role='group' id='groupButton'><a class='btn btn-success btn-small' style = 'height: 5%; margin-left: 5px; margin-right: 5px;' data-bs-toggle='modal' onclick='Consumption("+data+")'>Konsumpcja</a><a class='btn btn-danger btn-small' style='height: 5 %' onclick=Zwrot(" + data + ") id='zwrot' >Zwrot na magazyn</a></div ></div >"
                         },
                         orderable: false,
                         searchable: false,
@@ -660,16 +817,44 @@
             })
         }
         function AddByNum() {
-            Add($("#nrMaterialu"), 'SetByNumberInput', parseInt(count.value), $('#zleceniaList option:selected').val(), $('#processList option:selected').val(), $('#machinesList option:selected').val());
+            Add($("#nrMaterialu"), 'PostMethod', parseInt(count.value), $('#zleceniaList option:selected').val(), $('#processList option:selected').val(), $('#machinesList option:selected').val());
+            //Add($("#nrMaterialu"), 'SetByNumberInput', parseInt(count.value), $('#zleceniaList option:selected').val(), $('#processList option:selected').val(), $('#machinesList option:selected').val());
             $('#newOrder').find('#noweZamówienie').trigger('reset');
             $('#popover').attr('disabled', 'true');
             $('#warningText').text('');
-            setTimeout(function () { $('#orders').DataTable().ajax.reload() }, 200);
+            setTimeout(function () { $('#orders').DataTable().ajax.reload() }, 300);
+        }
+        function GetMaterialNumber(type) {
+            document.getElementById('materialNumber').addEventListener(type, function () {
+                var number = this.value;
+                $.ajax({
+                    type: 'Get',
+                    url: '@Url.Action("CheckMaterialNumber", "MachineProcess")',
+                    dataType: 'json',
+                    data: { 'number': this.value },
+                    success: function (data) {
+                        if (number > 0) {
+                            switch (data['result']) {
+                                case (true):
+                                    $('#warningTextForMaterialNumber').text('');
+                                    break;
+                                default:
+                                    $('#warningTextForMaterialNumber').text('Prosze dokładnie sprawdzić numer materialu!');
+                                    break;
+                            }
+                        }
+                        else {
+                            $('#warningTextForMaterialNumber').text('');
+                        }
+                    }
+                })
+            })
         }
         function Check() {;
             Add($("input.form-check-input:checked"), 'PostMethod', 0, $('#zleceniaList option:selected').val(), $('#processList option:selected').val(), $('#machinesList option:selected').val());
-           // setTimeout(function () { $('#orders').DataTable().ajax.reload() }, 200);
-            setTimeout(function () { document.location.reload() }, 300);
+            Add($("#materialNumber"), 'PostMethod', parseInt(document.getElementById('materialCount').value), $('#zleceniaList option:selected').val(), $('#processList option:selected').val(), $('#machinesList option:selected').val());
+             setTimeout(function () { $('#orders').DataTable().ajax.reload() }, 300);
+            //setTimeout(function () { document.location.reload() }, 300);
         }
         function Add(inputValue, actionName, count, zlecenieNr, processId, machineId) {
             var favorite = [];
@@ -723,34 +908,86 @@
         function RemHidden(elem) {
             return $(elem).removeAttr('hidden');
         }
-        function SaveCookies(id, cookieValue, cookieName) {
-            var sel = document.getElementById(id);
-
-            saveclass = saveclass ? saveclass : document.body.className;
-            document.body.className = saveclass + ' ' + sel.value;
-
-            SetCookies(cookieName, cookieValue, 365);
-        }
-
-        function SetCookies(cookieName, cookieValue, nDays) {
-            var today = new Date();
-            var expire = new Date();
-
-            if (nDays == null || nDays == 0)
-                nDays = 1;
-
-            expire.setTime(today.getTime() + 3600000 * 24 * nDays);
-            document.cookie = cookieName + "=" + escape(cookieValue) + ";expires=" + expire.toGMTString();
-        }
-        function readCookie(name) {
-            var nameEQ = name + "=";
-            var ca = document.cookie.split(';');
-            for (var i = 0; i < ca.length; i++) {
-                var c = ca[i];
-                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        function HideForm() {
+            if (this.checked) {
+                Hidden('#inputFormForNumber');
+            } else {
+                RemHidden('#inputFormForNumber');
             }
-            return null;
+        }
+        function Consumption(number) {
+
+            $.ajax({
+                type: 'Get',
+                url: '@Url.Action("Consumption", "MachineProcess")',
+                dataType: 'json',
+                data: { 'palletNumber': number },
+                success: function (data) {
+                    $('#consumption').modal('show');
+                    $(".modal-backdrop").remove();
+                    if (data != null) {
+                        GetDoc('numerPalety').value = data['nrPalety'];
+                        GetDoc('numerMaterialu').value = data['nrMaterialu'];
+                        GetDoc('material').value = data['materialName'];
+                        GetDoc('lokalizacja').value = data['lokalizacja'];
+                        GetDoc('totalCount').value = data['count'];
+                        GetDoc('check').value = data['count'];
+
+
+                    }
+
+                },
+                error: function (response) {
+                    alert("Some error occured!");
+                }
+            })
+            /*
+            var formDiv = $('<div/>');
+            $.get(url)
+                .done(function (response) {
+                    formDiv.html(response);
+                    Popup = formDiv.dialog({
+                        autoOpen: true,
+                        modal: true,
+                        draggable: true,
+                        position: { my: "center", at: "top", of: window },
+                        resizable: false,
+                        title: 'Konsumpcja materialów',
+                        height: 650,
+                        width: 400,
+                        close: function () {
+                            $(this).closest('.ui-dialog-content').dialog('destroy').remove();
+                        }
+                    });
+                });
+            */
+        }
+        function PalletUpdate() {
+            $.ajax({
+                type: 'Post',
+                url: '@Url.Action("PalletUpdate", "MachineProcess")',
+                dataType: 'json',
+                data: { 'palettNumber': parseInt($('#numerPalety').val()), 'count': parseInt($('#totalCount').val())},
+                success: function (data) {
+                    $("#consumption .close").click();
+                    $('#alertModal').modal('show');
+                     $('#textAlert').text('The data has been saved!');
+                     setTimeout(function () { $('#orders').DataTable().ajax.reload() }, 300);
+                     setTimeout(function () {
+                        $('#alertModal').modal('hide');
+                     }, 1500);
+                    
+                },
+                error: function (data) {
+                    $("#consumption .close").click();
+                    $('#alertModal').modal('show');
+                    $('#textAlert').text('Wystąpił problem!');
+                    $('#textAlert').css({ "text - align": "center", "color": "red", "font-weight": 600 });
+                    setTimeout(function () {
+                        $('#alertModal').modal('hide');
+                    }, 1500);
+                }
+            });
         }
     </script>
 }

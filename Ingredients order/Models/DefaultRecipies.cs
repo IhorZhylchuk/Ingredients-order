@@ -159,6 +159,21 @@ namespace Ingredients_order.Models
             bin.BinStatus = "Filling";
             return bin;
         }
+        public static List<PalettModel> ListOfPallets(List<PalettModel> pallets, int order)
+        {
+            List<PalettModel> palletsList = new List<PalettModel>();
+            double sum = 0;
+             foreach(var pallet in pallets)
+             {
+              if (sum >= order)
+               {
+                    break;
+               }
+                palletsList.Add(pallet);
+                sum += pallet.Ilość;
+            }
 
+            return palletsList;
+        }
     }
 }

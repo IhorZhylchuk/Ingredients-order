@@ -304,16 +304,28 @@ namespace Ingredients_order.Controllers
                 ingredients.Add(_dbContext.Ingredients.Where(n => n.MaterialNumber == item.IngredientNumber).Select(n => n.Name).FirstOrDefault());
             }
 
-            List<Tuple<int, string, double, string, int, string, string>> orders = new List<Tuple<int, string, double, string, int, string,string>>();
+            List<Tuple<TupleModel>> orders = new List<Tuple<TupleModel>>();
+            //List<Tuple<int, string, double, string, int, string, string>> orders = new List<Tuple<int, string, double, string, int, string,string>>();
 
-            foreach(var item in nOrders)
+            foreach (var item in nOrders)
             {
+                TupleModel tuple = new TupleModel
+                {
+                    IngredientNumber = item.IngredientNumber,
+                    IngredientName = _dbContext.Ingredients.Where(i => i.MaterialNumber == item.IngredientNumber).Select(n => n.Name).FirstOrDefault(),
+                    Count = item.Count,
+                    Status = item.Status,
+                    Id = item.Id,
+                    DataZamówienia = item.DataZamówienia,
+                    DataRealizacji = item.DataRealizacji,
+                    NumerPalety = item.Palett
+                };
                 //orders.Add(new Tuple<int, string, double, string, int, string, string>(item.I, ingredients[i], nOrders.Select(n => n.Count).ToList()[i], nOrders.Select(s => s.Status).ToList()[i], nOrders.Select(i => i.Id).ToList()[i], nOrders.Select));
-                  orders.Add(new Tuple<int, string, double, string, int, string, string>(item.IngredientNumber,_dbContext.Ingredients.Where(i => i.MaterialNumber == item.IngredientNumber).Select(n => n.Name).FirstOrDefault(),item.Count,item.Status,item.Id, item.DataZamówienia, item.DataRealizacji));
-
+                // orders.Add(new Tuple<int, string, double, string, int, string, string>(item.IngredientNumber,_dbContext.Ingredients.Where(i => i.MaterialNumber == item.IngredientNumber).Select(n => n.Name).FirstOrDefault(),item.Count,item.Status,item.Id, item.DataZamówienia, item.DataRealizacji));
+                orders.Add(new Tuple<TupleModel>(tuple));
             }
 
-            return Json(orders);
+            return Json(orders.Select(e => e.Item1).ToList());
         }
         public async Task<IActionResult> ZmianaStatusu(int id)
         {
@@ -349,19 +361,7 @@ namespace Ingredients_order.Controllers
             var status = _dbContext.NewOrders.Where(i => i.Id == id).Select(s => s.Status).FirstOrDefault();
             return Json(status);
         }
-        [HttpPost]
-        public async Task<IActionResult> DeleteOrder(int id)
-        {
-            if(id != 0)
-            {
-                _dbContext.OrdersForWarehouse.Remove(_dbContext.OrdersForWarehouse.Where(i => i.Id == id).FirstOrDefault());
-                await _dbContext.SaveChangesAsync();
-
-                return Ok();
-            }
-            return NotFound();
-
-        }
+       
         public IActionResult Warehouse()
         {
             return View();

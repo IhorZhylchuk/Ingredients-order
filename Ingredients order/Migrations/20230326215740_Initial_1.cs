@@ -2,7 +2,7 @@
 
 namespace Ingredients_order.Migrations
 {
-    public partial class Initital_1 : Migration
+    public partial class Initial_1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -66,6 +66,7 @@ namespace Ingredients_order.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Palett = table.Column<long>(type: "bigint", nullable: false),
                     ItemId = table.Column<int>(type: "int", nullable: false),
                     ProcessId = table.Column<int>(type: "int", nullable: false),
                     MachineId = table.Column<int>(type: "int", nullable: false),
@@ -137,6 +138,29 @@ namespace Ingredients_order.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Relations", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PalettModel",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PalletNumber = table.Column<long>(type: "bigint", nullable: false),
+                    MaterialId = table.Column<int>(type: "int", nullable: true),
+                    Ilość = table.Column<int>(type: "int", nullable: false),
+                    Localization = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PalettModel", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PalettModel_Ingredients_MaterialId",
+                        column: x => x.MaterialId,
+                        principalTable: "Ingredients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -302,15 +326,17 @@ namespace Ingredients_order.Migrations
                 name: "IX_Machines_ProcessModelId",
                 table: "Machines",
                 column: "ProcessModelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PalettModel_MaterialId",
+                table: "PalettModel",
+                column: "MaterialId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "Bins");
-
-            migrationBuilder.DropTable(
-                name: "Ingredients");
 
             migrationBuilder.DropTable(
                 name: "Items");
@@ -325,6 +351,9 @@ namespace Ingredients_order.Migrations
                 name: "OrdersForWarehouse");
 
             migrationBuilder.DropTable(
+                name: "PalettModel");
+
+            migrationBuilder.DropTable(
                 name: "Recipes");
 
             migrationBuilder.DropTable(
@@ -332,6 +361,9 @@ namespace Ingredients_order.Migrations
 
             migrationBuilder.DropTable(
                 name: "Machines");
+
+            migrationBuilder.DropTable(
+                name: "Ingredients");
 
             migrationBuilder.DropTable(
                 name: "Processes");

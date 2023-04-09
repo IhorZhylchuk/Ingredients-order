@@ -2,23 +2,23 @@
 
 namespace Ingredients_order.Migrations
 {
-    public partial class Initial_3 : Migration
+    public partial class Initial_2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "PalletNUmber",
-                table: "PalettModel",
-                type: "int",
+            migrationBuilder.AddColumn<long>(
+                name: "Palett",
+                table: "OrdersForWarehouse",
+                type: "bigint",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 0L);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "PalletNUmber",
-                table: "PalettModel");
+                name: "Palett",
+                table: "OrdersForWarehouse");
         }
     }
 }
