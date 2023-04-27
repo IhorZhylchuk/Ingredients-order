@@ -1,0 +1,18 @@
+﻿@{
+    ViewData["Title"] = "CreateBarcode";
+}
+
+<h4>Generate Barcode</h4>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css" rel="stylesheet" />
+
+<div class="row">
+    <div class="col-lg-10">
+      <img src="@Url.Action("GenerateBarCodeMain", "Waste")" alt="BarCode"/>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js" integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk" crossorigin="anonymous"></script>
+
+}

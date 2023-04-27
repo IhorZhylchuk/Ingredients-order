@@ -1,0 +1,773 @@
+﻿
+@model BinAttachmentModel;
+@{
+    ViewData["Title"] = "Bin Attachment";
+}
+<style>
+    .ui-dialog-titlebar-close:after {
+        content: 'X' !important;
+        position: absolute;
+        top: -4px;
+        right: 3px;
+    }
+
+    .modal-backdrop {
+        opacity: 0.01 !important;
+    }
+</style>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.2/css/bootstrapValidator.min.css" />
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
+
+<link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css' rel='stylesheet'>
+
+<header>
+
+    <nav id="sidebarMenu"
+         class="collapse d-lg-block sidebar collapse bg-white">
+        <div class="position-sticky">
+            <div class="list-group list-group-flush mx-3 mt-4">
+                <a href="~/Home/Index"
+                   class="list-group-item list-group-item-action py-2 ripple"
+                   aria-current="true">
+                    <i class="fas fa-tachometer-alt fa-fw me-3"></i>
+                </a>
+                <a href="~/Home/Index"
+                   class="list-group-item list-group-item-action py-2 ripple">
+                    <i class="fas fa-list-ul fa-fw me-3"></i><span>Zlecenia</span>
+                </a>
+                <a href="~/MachineProcess/ProcessMachineSelecting"
+                   class="list-group-item list-group-item-action py-2 ripple">
+                    <i class="fas fa-edit fa-fw me-3"></i><span>Zamówienia</span>
+                </a>
+                <a href="~/Warehouse/WareHouseCount"
+                   class="list-group-item list-group-item-action py-2 ripple">
+                    <i class="fas fa-warehouse fa-fw me-3"></i><span>Magazyn</span>
+                </a>
+                <a href="~/Waste/Index"
+                   class="list-group-item list-group-item-action py-2 ripple active" id="magazyn">
+                    <i class="fas fa-cube fa-fw me-3"></i><span>Odpad</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <nav id="main-navbar"
+         class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="~/Home/Index">
+                <img src="~/Logo.png" />
+            </a>
+            <a id="customButton" role="button" style="float:right" class="btn btn-success" asp-action="Logout" asp-controller="Home">Logout <i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+        </div>
+
+    </nav>
+
+</header>
+<main id="workingPage" style="margin-top: 130px">
+
+    <div class="form-group">
+        <a style="margin-bottom: 10px; top: 20px; color: white" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBin">Bin adding</a>
+
+        <a style="margin-bottom: 10px; top: 20px; color: white" class="btn btn-primary" data-bs-target="#barCode" data-bs-toggle="modal">Generate bar code</a>
+
+        <a style="margin-bottom: 10px; top: 20px; color: white" class="btn btn-primary" data-bs-target="#attachDetach" data-bs-toggle="modal">Attach/Detach</a>
+
+        <a style="margin-bottom: 10px; top: 20px; color: white" class="btn btn-warning" asp-action="AttachDetachMenu">Working area</a>
+    </div>
+    <div id="panel" style="width:100%;height:100%; position:center" data-backdrop="static" data-keyboard="false"></div>
+    <div class="modal fade" id="addBin" tabindex="-1" aria-labelledby="title" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="title">Bin adding</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="close" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form asp-action="BinAdding" asp-controller="Waste" method="post" id="targetForm">
+                        <div class="modal-body">
+                            <div class="form-group">
+
+                                <input class="form-control" type="text" required minlength="12" maxlength="12" asp-for="BinNumber" id="binNumber" />
+                                <span id="warning" style="color:red; font-size:small; font-style:normal"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col text-center">
+                                <input type="submit" value="Submit" class="btn btn-primary" disabled id="binSend" />
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="close" onclick="Close()">Close</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="barCode" tabindex="-1" aria-labelledby="title" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="title">Generate bar code</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="closeBar"></button>
+                </div>
+                <div class="modal-body">
+                    <form asp-action="GenerateBarCode" asp-controller="Waste" method="post" id="targetForm">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <input class="form-control" id="inputBarCode" required maxlength="12" minlength="12" type="text" asp-for="BinNumber" oninput="Check(this.value)" />
+                                <span id="warningMess" style="color:red; font-size:small; font-style:normal"></span>
+
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <div class="col text-center">
+                                <input type="submit" id="submitCode" value="Submit" disabled style="position:center" class="btn btn-primary" />
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closeBar" onclick="Close()">Close</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="attachDetach" tabindex="-1" aria-labelledby="title" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="title">Attach/Detach</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="closeDetach" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form asp-action="BinAttachment" method="Post" id="attachDetachForm">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <select id="processList" class="form-select" asp-items="@ViewBag.Processes" asp-for="ProcessName">
+                                    <option value="-1" id="defaultOption">Select process</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select id="machinesList" class="form-select" hidden asp-for="MachineName"></select>
+
+                            </div>
+                            <div class="form-group">
+                                <input id="binAdding" class="form-control" hidden asp-for="BinNumber" required maxlength="12" />
+                                <span id="warningText" style="color:red; font-size:small; font-style:normal"></span>
+                            </div>
+
+                            <div class="form-group" id="buttonsSection" hidden>
+                                <div class="col text-center">
+                                    <a id="detachButton" style="position:center" onclick="Detach()" class="btn btn-primary" hidden>Detach</a>
+                                    <input type="submit" value="Submit" id="submitButton" disabled class="btn btn-primary" />
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+                    <div class="card text-white bg-danger mb-3" style="max-width:100%;" id="attached" hidden>
+                        <div class="card-body">
+                            <h5 class="card-title">This bin is currently using</h5>
+                            <br />
+                            <span>Process</span>
+                            <input class="form-control" id="process" disabled />
+                            <br />
+                            <span>Machine</span>
+                            <input class="form-control" id="machine_" disabled />
+                        </div>
+                    </div>
+                    <div class="card text-white bg-success mb-3" style="max-width: 100%;" id="freeToUse" hidden>
+                        <div class="card-body">
+                            <h5 class="card-title">Free to use</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="binDetails" tabindex="-1" aria-labelledby="title" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="title">Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="closeDetach" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" id="free" hidden>
+                        <input asp-for="BinNumber" class="form-control" id="binDetailsNumberFree" readonly />
+                        <br />
+                        <div class="card text-white bg-success mb-3" style="max-width: 100%;" id="freeToUse">
+                            <div class="card-body">
+                                <h5 class="card-title">Free to use</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" id="currentlyUsing" hidden>
+                        <form asp-action="BinDetaching" asp-controller="Waste" method="post">
+                            <div class="form-group">
+                                <input asp-for="BinNumber" class="form-control" id="binDetailsNumber" readonly />
+
+                                <br />
+                                <div class="card text-white bg-danger mb-3" style="max-width:100%;" id="attached">
+                                    <div class="card-body">
+                                        <h5 class="card-title">This bin is currently using</h5>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col text-center">
+                                        <button type="submit" class="btn btn-primary">Detach</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <table id="binsManagement" class="table table-striped table-bordered display" style="width:100%">
+        <thead>
+            <tr>
+                <th style="text-align: center"></th>
+                <th id="valueBinNumber">Bin number</th>
+                <th id="valueBinStatus">Status</th>
+                <th id="processName">Process</th>
+                <th id="machine">Machine/Area</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+    <form asp-action="GenerateBarCode" asp-controller="Waste" method="post" id="formGenerator" hidden>
+        <div class="modal-body">
+            <div class="form-group">
+                <input asp-for="Id" id="binsId" />
+                <input asp-for="BinStatus" id="binsStatus" />
+                <input class="form-control" type="text" id="binsNumber" asp-for="BinNumber" />
+            </div>
+        </div>
+    </form>
+</main>
+@section Scripts{
+    <script src="~/js/site.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js" integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
+
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"
+            integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0="
+            crossorigin="anonymous"></script>
+
+    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.jqueryui.min.js"></script>
+
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        var regExp = /[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9]/;
+        $(document).ready(function () {
+            var attached = document.getElementById('attached');
+            var free = document.getElementById('freeToUse');
+            var process = document.getElementById('process');
+            var machine = document.getElementById('machine_');
+            var button = document.getElementById('submitButton');
+            var binAdding = document.getElementById('binAdding');
+            var list = document.getElementById('machinesList');
+            var detach = document.getElementById('detachButton');
+            var message = $('#warningText');
+            $('#processList').on('change', function () {
+                $.ajax({
+                    method: 'Get',
+                    url: '/Waste/Machines',
+                    data: { 'processModelId': $('#processList').val() },
+                    success: function (data) {
+                        if ($('#processList option:selected').val() != -1) {
+                            $('#machinesList').removeAttr('hidden');
+                            var items = '';
+                            $(data).each(function () {
+                                items += "<option value=" + this.value + ">" + this.text + "</option>";
+                            })
+                            $('#machinesList').html(items);
+                            if ($('#machinesList option:selected')) {
+                                $('#binAdding').removeAttr('hidden');
+                                $('#buttonsSection').removeAttr('hidden')
+                            }
+                        } else {
+                            $('#machinesList').attr('hidden', 'true');
+                            $('#binAdding').attr('hidden', 'true');
+                            $('#buttonsSection').attr('hidden', 'true');
+                        }
+                    }
+                })
+            })
+
+            document.getElementById("binAdding").addEventListener('keyup', function (e) {
+
+                var binNumber = this.value;
+                if (binNumber.length == 12) {
+                    $.ajax({
+                        type: 'Get',
+                        url: '@Url.Action("BinStatus", "Waste")',
+                        dataType: 'json',
+                        data: { 'binNumber': binNumber },
+                        success: function (data) {
+                            if (data['status'] == "Free to use") {
+                                if (binNumber.length == 12) {
+                                    free.removeAttribute('hidden');
+                                    button.removeAttribute('disabled');
+                                    message.text("");
+                                }
+                                else {
+                                    attached.hidden = true;
+                                    free.hidden = true;
+                                    button.disabled = true;
+                                    message.text("Please, check bin's number!");
+                                }
+
+                            }
+
+                            else if (data['status'] == "Filling") {
+                                if (binNumber.length == 12) {
+                                    attached.removeAttribute('hidden');
+                                    process.value = data['process'];
+                                    machine.value = data['machine'];
+                                    message.text("");
+                                    free.hidden = true;
+                                }
+
+                            }
+                            else if (data['status'] == null || binNumber.length != 12) {
+                                message.text("Please, check bin number!");
+                                attached.hidden = true;
+                                free.hidden = true;
+                                button.disabled = true;
+                            }
+                            else {
+                                attached.hidden = true;
+                                free.hidden = true;
+                                button.disabled = true;
+                                message.text("Please, check bin number!");
+                            }
+
+                        }
+                    })
+                }
+                else {
+                    attached.hidden = true;
+                    free.hidden = true;
+                    button.disabled = true;
+                    message.text("");
+                }
+            });
+            document.getElementById('processList').addEventListener('change', function (e) {
+
+                        setTimeout(function () {
+                            AttachedBin();
+                        }, 150);
+
+
+            });
+            document.getElementById('machinesList').addEventListener('change', function (e) {
+
+                        setTimeout(function () {
+                            AttachedBin();
+                        }, 150);
+
+            })
+
+
+            daTable = $('#binsManagement').DataTable({
+                    dom: 'Bfrtip',
+                    ajax: {
+                        url: '/Waste/GetBins',
+                        type: 'GET',
+                        dataSrc: ''
+                    },
+                    rowId: 'Id',
+                    order: [[1, 'asc']],
+                    columnDefs: [
+                        { className: 'dt-body-center', targets: [0, 1, 2, 3, 4, 5] },
+                        {
+                            targets: [1,2,3, 4, 5],
+                            className: 'dt-head-center'
+                        },
+                        {
+                            targets: 0,
+                            width: '7%'
+                        },
+                        {
+                            targets: [2,3],
+                            width: '13%'
+                        },
+                        {
+                            targets: [1, 4],
+                            width:'19%'
+                        },
+
+                        {
+                            targets: [5],
+                            width: '25%'
+                        }
+
+                    ],
+                    columns: [
+                        { data: null, "sortable": false },
+                        { data: "binNumber"},
+                        { data: "binStatus" },
+                        { data: "processName" },
+                        { data: "machineName"},
+
+                        {
+                            data: "id", "render": function (data) {
+                                return "<div style='width:100%; position: center'><div class='btn-group' role='group' id='groupButton'><a id='code' class='btn btn-warning btn-small' onclick='GenerateCode(" + data + ")' style='height:5%'>Bar code</a ><a class='btn btn-success btn-small' style = 'height: 5%; margin-left: 5px; margin-right: 5px;' data-toggle='modal' onclick='Details("+data+")'>Details</a><a class='btn btn-danger btn-small' style='height: 5 %' onclick=Delete(" + data + ") id='Delete' >Remove bin</a></div ></div >"
+                            },
+                            orderable: false,
+                            searchable: false,
+                            width: "150px"
+                        }
+                    ]
+                });
+            $('#binsManagement').DataTable().on('order.dt search.dt', function () {
+                $('#binsManagement').DataTable().column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+
+            document.getElementById("binNumber").addEventListener('keyup', function (e) {
+                if (this.value.match(regExp) && this.value.length == 12) {
+                    GetBin();
+                }
+                else {
+                    document.getElementById('binSend').setAttribute('disabled', 'disabled');
+                    $('#warning').text("The right format of bin's number is 00-00-00-000 ");
+                }
+            })
+            $('#barCode').modal({ backdrop: 'static', keyboard: false });
+            $('#barCode').on('shown.bs.modal', function () {
+                $('#inputBarCode').focus();
+            })
+
+            $('#addBin').modal({ backdrop: 'static', keyboard: false });
+            $('#addBin').on('shown.bs.modal', function () {
+                $('#binNumber').focus();
+            })
+            $('#attachDetach').modal({ backdrop: 'static', keyboard: false });
+
+            $('#close').on('click', function () {
+                document.getElementById("binNumber").value = '';
+                $('#warning').text("");
+
+            })
+            $('#closeBar').on('click', function () {
+                $('#warningMess').text('');
+                $('#inputBarCode').val('');
+
+            })
+            $('#closeDetach').on('click', function () {
+                $('#processList').val("-1");
+                list.value = "";
+                binAdding.value = "";
+                list.hidden = true;
+                binAdding.hidden = true;
+                detach.hidden = true;
+            })
+            ShowPanel($('#panel'));
+
+        });
+
+
+        function Detach() {
+            var binNumber = document.getElementById('binAdding').value;
+            Swal.fire({
+                title: 'Detach bin ' + binNumber + ' ?',
+                text: "",
+                icon: 'question',
+                showCancelButton: true,
+                showConfirmButton: true,
+                cancelButtonText: 'Back',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes!'
+                        }).then((result) => {
+            if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Waste/Detach/',
+                        data: { 'binNumber': binNumber },
+
+                    success: function(data) {
+                        if (data.success) {
+
+                            setTimeout(function () {window.location.reload()}, 1000);
+                        }
+                    }
+                })
+                    Swal.fire(
+                        'Done!',
+                        '',
+                        'success'
+                    )
+                }
+                })
+        }
+        function AttachedBin() {
+            $.ajax({
+                type: 'Get',
+                url: '/Waste/CheckAttaching',
+                data: { 'process': $('#processList').val(), 'machine': $('#machinesList').val() },
+                success: function (data) {
+
+                    if (data['binNumber'] != null) {
+                        $('#binAdding').val(data['binNumber']);
+                        $('#detachButton').removeAttr('hidden');
+                        $('#binAdding').attr('disabled', 'true');
+
+                       $('#submitButton').attr('hidden', 'true');
+
+                    }
+                    else {
+                        $('#submitButton').removeAttr('hidden');
+                        $('#detachButton').attr('hidden', 'true');
+                        $('#binAdding').val('');
+                        $('#binAdding').removeAttr('disabled');
+                    }
+                }
+            })
+        }
+        function BinCheking() {
+            var binNumber = document.getElementById('binAdding').value.slice(0, 12).replace(/\s/g, '');
+            var attached = document.getElementById('attached');
+            var free = document.getElementById('freeToUse');
+            var process = document.getElementById('process');
+            var machine = document.getElementById('machine_');
+
+            var button = document.getElementById('submitButton');
+
+            $.ajax({
+                type: 'Get',
+                url: '@Url.Action("BinStatus", "Waste")',
+                dataType: 'json',
+                data: { 'binNumber': binNumber },
+                success: function (data) {
+
+                    if (data['status'] == "Free to use") {
+                        if (binNumber.length == 12) {
+                            free.removeAttribute('hidden');
+                            button.removeAttribute('disabled');
+                            message.textContent("");
+                        }
+                        else {
+                            attached.hidden = true;
+                            free.hidden = true;
+                            button.disabled = true;
+                            message.textContent("Please, check bin's number!");
+                        }
+                    }
+                    else if (data['status'] == "Filling"){
+                        if (binNumber.length == 12) {
+                            attached.removeAttribute('hidden');
+                            process.value = data['process'];
+                            machine.value = data['machine'];
+                            message.textContent("");
+                            free.hidden = true;
+                        }
+                    }
+                    else if (data['status'] == null || binNumber.length != 12) {
+                        message.textContent("Please, check bin number!");
+                        attached.hidden = true;
+                        free.hidden = true;
+                        button.disabled = true;
+                    }
+                    else {
+                        attached.hidden = true;
+                        free.hidden = true;
+                        button.disabled = true;
+                        message.textContent("");
+                    }
+                }
+            })
+        }
+        function Check(value) {
+            var message = $('#warningMess');
+            var button = document.getElementById('submitCode');
+            if (value.length == 12) {
+                $.ajax({
+                    type: 'Get',
+                    url: '@Url.Action("BinsChecking", "Waste")',
+                    dataType: 'json',
+                    data: { 'number': value },
+                    success: function (data) {
+                        if (data == true && value.length == 12) {
+                            message.text('');
+                            button.removeAttribute('disabled');
+                        }
+                        else {
+                            message.text('Please, make sure this bin is in the database!');
+                            button.setAttribute('disabled', 'disabled');
+                        }
+                    }
+                })
+            }
+            else {
+                button.setAttribute('disabled', 'disabled');
+                message.text('');
+            }
+        }
+        function Delete(id) {
+                Swal.fire({
+                title: 'Remove this bin from the list?',
+                text: "You won't be able to revert this!",
+                icon: 'question',
+                showCancelButton: true,
+                showConfirmButton: true,
+                cancelButtonText: 'Back',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, remove it!'
+                        }).then((result) => {
+            if (result.isConfirmed) {
+                    $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("Delete", "Waste")/' + id,
+                    success: function(data) {
+                        if (data.success) {
+                            $('#binsManagement').DataTable().ajax.reload(null, false);
+                        }
+                    }
+                })
+                    Swal.fire(
+                        'Removed!',
+                        'Bin has been removed.',
+                        'success'
+                    )
+                }
+                })
+        }
+        function GenerateCode(id) {
+                $.ajax({
+                    type: 'Get',
+                    dataType: 'json',
+                    url: '/Waste/GenerateCodeById/'+ id,
+                    success: function(data) {
+                        var redirectWindow = window.open(
+                            '/Waste/GenerateBarCodeMain?code=' + data, '_blank');
+                        redirectWindow.location;
+                    }
+                })
+
+        }
+        function GenerateCodeMain(id) {
+            var binId = document.getElementById('binsId');
+            var status = document.getElementById('binsStatus');
+            var number = document.getElementById('binsNumber');
+            $.ajax({
+                type: 'Get',
+                dataType: 'json',
+                url: '/Waste/GenerateCodeById/' + id,
+                success: function (data) {
+                    binId.value = 1;
+                    status.value = "Empty";
+                    number.value = data;
+                    $("#formGenerator").submit();
+                }
+            })
+
+        }
+        function GetBin() {
+            var bNumber = document.getElementById('binNumber').value;
+            var button = document.getElementById('binSend');
+            bNumber.slice(0, 12).replace(/\s/g, '');
+                 $.ajax({
+                type: 'Get',
+                url: '@Url.Action("BinsChecking", "Waste")',
+                dataType: 'json',
+                     data: { 'number': bNumber },
+                     success: function (data) {
+
+                         if (data == false && bNumber.length == 12) {
+                             $('#warning').text("");
+                             button.removeAttribute('disabled');
+
+                         }
+
+                         else {
+                             if (data == true && bNumber.length == 12) {
+                               $('#warning').text("This number has already been taken!");
+                               button.setAttribute('disabled', 'disabled');
+                             }
+
+                             button.setAttribute('disabled', 'disabled');
+                         }
+                }
+            })
+
+        }
+        function Close() {
+            document.getElementById("binNumber").value = '';
+            $('#warning').text("");
+            $('#warningMess').text('');
+            $('#inputBarCode').val('')
+        }
+        function BinAdding(url) {
+            var formDiv = $('<div/>');
+            $.get(url)
+                .done(function (response) {
+                    formDiv.html(response);
+                    Popup = formDiv.dialog({
+                        autoOpen: true,
+                        modal: true,
+                        draggable: true,
+                        title: "Bin's info",
+                        position: { my: "center", at: "center", of: window },
+                        resizable: false,
+                        height: 'auto',
+                        width: 400,
+                        close: function () {
+                            $(this).closest('.ui-dialog-content').dialog('close');
+                        }
+                    });
+                });
+        }
+        function ShowPanel(name) {
+            var panel = name;
+            $('#test').click(function (event) {
+                var url = $(this).data('url');
+                var decodeUrl = decodeURIComponent(url);
+                $.get(decodeUrl).done(function (data) {
+                    panel.html(data);
+                    panel.find('.modal').modal('show');
+                })
+                panel.on('hidden.bs.modal', function () {
+                    location.reload();
+                })
+
+            })
+        }
+        function Details(id) {
+            $.ajax({
+                type: 'Get',
+                url: '/Waste/BinStatusForDetaching/' + id,
+                success: function (data) {
+                    $('#binDetails').modal('show');
+                    if (data['status'] == "Free to use") {
+                        $('#free').removeAttr('hidden');
+                        document.getElementById('currentlyUsing').hidden = true;
+                        $('#binDetailsNumberFree').val(data['binNumber']);
+                        $('#binDetailsNumber').val('');
+
+                    }
+                    else {
+                        $('#currentlyUsing').removeAttr('hidden');
+                        $('#binDetailsNumber').val(data['binNumber']);
+                        $('#binDetailsNumberFree').val('');
+                        document.getElementById('free').hidden = true;
+                    }
+
+                }
+            })
+        }
+
+    </script>
+
+}

@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Ingredients_order.Models
 {
-    public class ApplicationDbContext: DbContext
+    public class ApplicationDbContext: IdentityDbContext<UsersIdentity, IdentityRole, string>
     {
         public DbSet<Recipe> Recipes { get; set; }
         public DbSet<Item> Items { get; set; }
@@ -18,6 +20,7 @@ namespace Ingredients_order.Models
         public DbSet<BinAttachmentModel> Bins { get; set; }
         public DbSet<ProcessModel> Processes { get; set; }
         public DbSet<MachineModel> Machines { get; set; }
+        public DbSet<PalettModel> PalettModel { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> dbContext) : base(dbContext)
         {
            

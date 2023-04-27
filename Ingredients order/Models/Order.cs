@@ -11,7 +11,6 @@ namespace Ingredients_order.Models
         public int ItemId { get; set; }
         public int ProcessId { get; set; }
         public int MachineId { get; set; }
-
         public string Ingredient { get; set; }
         public int Count { get; set; }
     }
