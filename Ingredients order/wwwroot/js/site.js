@@ -111,3 +111,6 @@ function GetBin(id) {
         }
     })
 }
+function GetDoc(elem) {
+    return document.getElementById(elem);
+}

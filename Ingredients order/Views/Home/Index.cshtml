@@ -47,19 +47,19 @@
                 </a>
                 <a href="~/Home/Index"
                    class="list-group-item list-group-item-action py-2 ripple active">
-                    <i class="fas fa-chart-area fa-fw me-3"></i><span>Zlecenia</span>
+                    <i class="fas fa-list-ul fa-fw me-3"></i><span>Zlecenia</span>
                 </a>
                 <a href="~/MachineProcess/ProcessMachineSelecting"
                    class="list-group-item list-group-item-action py-2 ripple">
-                    <i class="fas fa-chart-pie fa-fw me-3"></i><span>Zamówienia</span>
+                    <i class="fas fa-edit fa-fw me-3"></i><span>Zamówienia</span>
                 </a>
                 <a href="~/Warehouse/WareHouseCount"
                    class="list-group-item list-group-item-action py-2 ripple">
-                    <i class="fas fa-chart-pie fa-fw me-3"></i><span>Magazyn</span>
+                    <i class="fas fa-warehouse fa-fw me-3"></i><span>Magazyn</span>
                 </a>
                 <a href="~/Waste/Index"
                    class="list-group-item list-group-item-action py-2 ripple" id="odpad">
-                    <i class="fas fa-chart-pie fa-fw me-3"></i><span>Odpad</span>
+                    <i class="fas fa-cube fa-fw me-3"></i><span>Odpad</span>
                 </a>
             </div>
         </div>
@@ -136,7 +136,7 @@
                             </div>
                             <div class="form-group" id="buttonsSection">
                                 <div class="col text-center">
-                                    <input type="submit" value="Save" disabled  id="submitButton" class="btn btn-primary" />
+                                    <input type="submit" value="Save" disabled id="submitButton" class="btn btn-primary" />
                                 </div>
                                 <span id="warningTextForOrder" style="color:red; font-size:small; font-style:normal"></span>
                             </div>
@@ -189,6 +189,58 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="zlecenieUpdate" backdrop="static" keyboard="false" tabindex="-1" aria-labelledby="title" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="title">Zmiana zlecenia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="closeZlecenieUpdate" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form asp-action="EditedOrder" method="Post" id="noweZlecenie">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <input hidden asp-for="Id" id="zlecenieId"/>
+                                <input class="form-control" type="number" readonly placeholder="Numer zlecenia" required asp-for="NrZlecenia" min="2000000" max="3000000" id="nrZlecenieUpdate" />
+                                <span id="warning" style="color:red; font-size:small; font-style:normal"></span>
+                            </div>
+                            <div class="form-group">
+                                <select id="recipiesUpdate" class="form-select" asp-items="@ViewBag.Recipies" required asp-for="RecipesName">
+                                    <option value="-1" id="optionRecipie">Wybierz recepture</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <input id="countUpdate" class="form-control" type="number" placeholder="Iłość (kg)" required min="500" max="3000" asp-for="Count" />
+                                <span id="warningCount" style="color:red; font-size:small; font-style:normal"></span>
+                            </div>
+                            <div class="form-group">
+                                <select id="opakowanieUpdate" class="form-select" asp-items="@ViewBag.Opakowania" required asp-for="Opakowanie">
+                                    <option value="-1" id="optionOpakowanie">Wybierz opakowanie</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select id="dekelUpdate" class="form-select" asp-items="@ViewBag.Dekel" required asp-for="PokrywaNekrętka">
+                                    <option value="-1" id="optionDekel">Pokrywa/Nakrętka</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select id="etykietaUpdate" class="form-select" asp-items="@ViewBag.Naklejka" required asp-for="Naklejka">
+                                    <option value="-1" id="optionEtykieta">Etykieta</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="buttonsSection">
+                                <div class="col text-center">
+                                    <input type="submit" value="Save" id="submitButtonUpdate" class="btn btn-primary" />
+                                </div>
+                                <span id="warningTextForOrderUpdate" style="color:red; font-size:small; font-style:normal"></span>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </main>
 <footer>
@@ -229,7 +281,7 @@
         var number = document.getElementById('numberCount');
         var count = document.getElementById('count');
         var numerZlecenia = document.getElementById('nrZlecenia');
-
+        var countUpdate = document.getElementById('countUpdate');
         var num = 1;
         $(document).ready(function () {
             $('#zlecenie').modal({ backdrop: 'static', keyboard: false });
@@ -283,7 +335,7 @@
                     { data: "count" },
                     {
                         data: "id", "render": function (data) {
-                            return "<div style='width:100%; position: center'><div class='btn-group' role='group' id='groupButton'><a class='btn btn-success btn-small' style = 'height: 5%; margin-left: 5px; margin-right: 5px;' data-toggle='modal' onclick='Details(" + data + ")'>Szczegóły</a><a class='btn btn-danger btn-small' style='height: 5 %' onclick=Delete(" + data + ") id='Delete' >Usuń zlecenie</a></div ></div >"
+                            return "<div style='width:100%; position: center'><div class='btn-group' role='group' id='groupButton'><a class='btn btn-success btn-small' style = 'height: 5%; margin-left: 5px; margin-right: 5px;' data-toggle='modal' onclick='Details(" + data + ")'>Szczegóły</a><a class='btn btn-danger btn-small' style='height: 5 %' onclick=Delete(" + data + ") id='Delete' >Usuń</a><a class='btn btn-warning btn-small' style = 'height: 5%; margin-left: 5px; margin-right: 5px;'  onclick=ChangeOrder(" + data + ") id='Delete' >Zmień</a></div ></div >"
                         },
                         orderable: false,
                         searchable: false,
@@ -301,7 +353,7 @@
                 this.value = this.value.trim().slice(0, 4);
                 numerZlecenia.value = numerZlecenia.value.trim().slice(0, 7);
                 var inputValue = numerZlecenia.value;
-                if (this.value > 500 && this.value < 3000 ) {
+                if (this.value > 500 && this.value <= 3000 ) {
                     $('#warningCount').text('');
                     DefaultCheck(inputValue);
                 }
@@ -332,7 +384,7 @@
                             }
                             else {
                                 $('#warning').text("");
-                                if (Check('#recipies') && Check('#opakowanie') && Check('#dekel') && Check('#etykieta') && count.value > 500 && count.value < 3000) {
+                                if (Check('#recipies') && Check('#opakowanie') && Check('#dekel') && Check('#etykieta') && count.value > 500 && count.value <= 3000) {
                                     $('#submitButton').removeAttr('disabled');
                                     $('#warningTextForOrder').text("");
                                 }
@@ -472,6 +524,7 @@
                 type: 'Get',
                 url: '/Home/Details/' + id,
                 success: function (data) {
+
                     $('#details').modal('show');
                     $('#detailsNrZlecenia').val(data['details']['nrZlecenia']);
                     $('#detailsReceptura').val(data['details']['recipesName']);
@@ -487,7 +540,7 @@
                     $.each(data['opakowania'], function (index, value) {
                         $('#numerMaterialu').append("<tr><td id='matNumber__" + index + "' onclick='Copy($(this))'>" + data['opakowania'][index]['materialNumber'] + "</td><td>" + data['opakowania'][index]['name'] +
                             "</td><td>" + data['details']['ilośćOpakowań'] + ' szt. ' + "</td></tr>");
-                    })
+                    }) 
                 }
             })
         }
@@ -529,6 +582,92 @@
                 }
                 })
         }
+        function SelectChanged(id) {
+            document.getElementById(id).addEventListener('change', function () {
+                if (Check('#recipiesUpdate') && Check('#opakowanieUpdate') && Check('#dekelUpdate') && Check('#etykietaUpdate') && countUpdate.value >= 500 && countUpdate.value <= 3000) {
+                    $('#submitButtonUpdate').removeAttr('disabled');
+                    $('#warningTextForOrderUpdate').text("");
+                }
+                else {
+                    $('#submitButtonUpdate').attr('disabled', 'true');
+                    $('#warningTextForOrderUpdate').text('Prosze dokładnie sprawdzić czy wszystkie opcje są wybrane!');
+                }
+            })
+        }
+        function ChangeOrder(id) {
+            $.ajax({
+                type: 'Get',
+                url: '@Url.Action("EditOrder", "Home")',
+                dataType: 'json',
+                data: { 'id': id },
+                success: function (data) {
+                    $('#zlecenieUpdate').modal('show');
+                    $('#zlecenieId').val(data['id']);
+                    $('#nrZlecenieUpdate').val(data['nrZlecenia']);
+                    $('#recipiesUpdate').val(data['recipesName']).attr('selected', 'selected');
+                   // $('#recipies').prop('disabled', true);
+                    $('#countUpdate').val(data['count']);
+                    $('#opakowanieUpdate').val(data['opakowanie']).attr('selected', 'selected');
+                   // $('#opakowanie').prop('disabled', true);
+                    $('#dekelUpdate').val(data['pokrywaNekrętka']).attr('selected', 'selected');
+                    //$('#dekel').prop('disabled', true);
+                    $('#etykietaUpdate').val(data['naklejka']).attr('selected', 'selected');
+                    var select = ['recipiesUpdate', 'opakowanieUpdate', 'dekelUpdate', 'etykietaUpdate'];
+                    // for (var i = 0; i < select.length; i++) {
+                    $.each(select, function (index, element) {
+                        SelectChanged(element);
+                        //alert(element);
+                    });
 
+                   // SelectChanged('recipiesUpdate');
+                   // SelectChanged('opakowanieUpdate');
+                   // SelectChanged('dekelUpdate');
+                  //  SelectChanged('etykietaUpdate');
+
+                   // }
+                    /* if (Check('#recipiesUpdate') && Check('#opakowanieUpdate') && Check('#dekelUpdate') && Check('#etykietaUpdate') && countUpdate.value >= 500 && countUpdate.value <= 3000) {
+                        $('#submitButtonUpdate').removeAttr('disabled');
+                        $('#warningTextForOrderUpdate').text("");
+                    }
+                    else {
+                        $('#submitButtonUpdate').attr('disabled', 'true');
+                        $('#warningTextForOrderUpdate').text('Prosze dokładnie sprawdzić czy wszystkie opcje są wybrane!');
+                    } */
+                    //$('#etykieta').prop('disabled', true);
+                    //$('#title').text('Zmiana zlecenia');
+                    //$('#submitButton').removeAttr('disabled');
+                    /*
+                    $('#submitButton').on('click', function () {
+                        $('#noweZlecenie').submit();
+                        setTimeout(function () {
+                            FormChange();
+                        }, 300);
+                    })
+                    $('#closeNewZlecenie').on('click', function () {
+                        FormChange();
+                    }) */
+                },
+                error: function (response) {
+                    alert('Some error occured!');
+                }
+
+            })
+        }
+        function FormChange() {
+            document.getElementById('noweZlecenie').reset();
+            $('#title').text('Nowe zlecenie');
+            $('#noweZlecenie').attr('action', "/Home/NoweZlecenie");
+            $('#nrZlecenia').prop('readonly', false);
+            $('#nrZlecenia').val();
+            $('#recipies').val('-1').attr('selected', 'selected');
+            $('#recipies').prop('disabled', false);
+            $('#opakowanie').val('-1').attr('selected', 'selected');
+            $('#opakowanie').prop('disabled', false);
+            $('#dekel').val('-1').attr('selected', 'selected');
+            $('#dekel').prop('disabled', false);
+            $('#etykieta').val('-1').attr('selected', 'selected');
+            $('#etykieta').prop('disabled', false);
+            $('#submitButton').attr('disabled', 'true');
+        }
     </script>
 }

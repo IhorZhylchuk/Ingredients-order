@@ -7,12 +7,15 @@ namespace Ingredients_order.Models
 {
     public class NewOrder: DefaultForOrders
     {
-       // public long Palett { get; set; }
+        public IEnumerable<PalettModel> Paletts { get; set; }
+
+        // public long Palett { get; set; }
     }
     public class OrdersForWarehouse : DefaultForOrders
     {
         public string DataZamówienia { get; set; }
         public string DataRealizacji { get; set; }
+        public long Palett { get; set; }
     }
     public class DefaultForOrders
     {
@@ -20,10 +23,7 @@ namespace Ingredients_order.Models
         public int ItemId { get; set; }
         public int ProcessId { get; set; }
         public int MachineId { get; set; }
-        public string Status { get; set; }
         public int IngredientNumber { get; set; }
-        public double Count { get; set; }
-        public long Palett { get; set; }
     }
 }
 

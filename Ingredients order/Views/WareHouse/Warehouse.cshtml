@@ -27,19 +27,19 @@
                 </a>
                 <a href="~/Home/Index"
                    class="list-group-item list-group-item-action py-2 ripple">
-                    <i class="fas fa-chart-area fa-fw me-3"></i><span>Zlecenia</span>
+                    <i class="fas fa-list-ul fa-fw me-3"></i><span>Zlecenia</span>
                 </a>
                 <a href="~/MachineProcess/ProcessMachineSelecting"
                    class="list-group-item list-group-item-action py-2 ripple">
-                    <i class="fas fa-chart-pie fa-fw me-3"></i><span>Zamówienia</span>
+                    <i class="fas fa-edit fa-fw me-3"></i><span>Zamówienia</span>
                 </a>
                 <a href="~/Warehouse/WareHouseCount"
                    class="list-group-item list-group-item-action py-2 ripple active">
-                    <i class="fas fa-chart-pie fa-fw me-3"></i><span>Magazyn</span>
+                    <i class="fas fa-warehouse fa-fw me-3"></i><span>Magazyn</span>
                 </a>
                 <a href="~/Waste/Index"
                    class="list-group-item list-group-item-action py-2 ripple" id="odpad">
-                    <i class="fas fa-chart-pie fa-fw me-3"></i><span>Odpad</span>
+                    <i class="fas fa-cube fa-fw me-3"></i><span>Odpad</span>
                 </a>
             </div>
         </div>
@@ -98,7 +98,7 @@
             warehouseTable = $('#warehouse').DataTable({
                 dom: 'Bfrtip',
                 ajax: {
-                    url: '/Home/GetOrdersForWarehouse',
+                    url: '/WareHouse/GetOrdersForWarehouse',
                     type: 'GET',
                     dataSrc: ''
                 },
@@ -142,11 +142,14 @@
                     { data: "dataRealizacji" },
                     { data: "status" },
                     {
-                        data: "id", "render": function (data) {
+                        data: "numerPalety", "render": function (data) {
                             var result = null;
                             $.ajax({
                                 type: 'Get',
-                                url: '/Home/GetStatus/' + parseInt(data),
+                                // url: '/WareHouse/GetStatus/' + parseInt(data),
+                                url: '@Url.Action("GetStatus", "WareHouse")',
+                                dataType: 'json',
+                                data: { 'palletNumber': JSON.stringify(data) },
                                 async: false,
                                 success: function (data) {
                                     result = data;
@@ -174,31 +177,39 @@
                 });
             }).draw();
         })
-        function Status(id) {
-
+        function Status(palletNumber) {
             $.ajax({
                 type: 'Post',
-                url: '@Url.Action("ZmianaStatusu", "Home")/'+ id,
+                url: '@Url.Action("ZmianaStatusu", "WareHouse")',
+                dataType: 'json',
+                data: { 'palletNumber': palletNumber},
                 success: function (response) {
                     $('#warehouse').DataTable().ajax.reload();
-                  //  $('#orders').DataTable().ajax.reload();
 
                 },
                 failure: function (response) {
-                    alert('Some error occured!');
+                    alert(JSON.stringify(response))
                 },
                 error: function (response) {
-                    alert('Some error occured!');
+                    alert(JSON.stringify(response))
                 }
             })
 
         }
-        function Delete(id) {
+        function Delete(palletNumber) {
             $.ajax({
                 type: 'Post',
-                url: '@Url.Action("DeleteOrder", "WareHouse")/' + id,
-                success: function (data) {
+                url: '@Url.Action("DeleteOrder", "WareHouse")',
+                dataType: 'json',
+                data: { 'palletNumber': parseInt(palletNumber) },
+                success: function (response) {
                     $('#warehouse').DataTable().ajax.reload();
+                },
+                failure: function (response) {
+                    alert(JSON.stringify(response))
+                },
+                error: function (response) {
+                    alert(JSON.stringify(response))
                 }
 
             })

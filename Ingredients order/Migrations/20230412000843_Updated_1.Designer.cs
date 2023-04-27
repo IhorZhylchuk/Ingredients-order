@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ingredients_order.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230326215740_Initial_1")]
-    partial class Initial_1
+    [Migration("20230412000843_Updated_1")]
+    partial class Updated_1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -444,9 +444,6 @@ namespace Ingredients_order.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<double>("Count")
-                        .HasColumnType("float");
-
                     b.Property<int>("IngredientNumber")
                         .HasColumnType("int");
 
@@ -456,14 +453,8 @@ namespace Ingredients_order.Migrations
                     b.Property<int>("MachineId")
                         .HasColumnType("int");
 
-                    b.Property<long>("Palett")
-                        .HasColumnType("bigint");
-
                     b.Property<int>("ProcessId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -477,15 +468,6 @@ namespace Ingredients_order.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<double>("Count")
-                        .HasColumnType("float");
-
-                    b.Property<string>("DataRealizacji")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DataZamówienia")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("IngredientNumber")
                         .HasColumnType("int");
 
@@ -497,9 +479,6 @@ namespace Ingredients_order.Migrations
 
                     b.Property<int>("ProcessId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -513,13 +492,25 @@ namespace Ingredients_order.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("DataRealizacji")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DataZamówienia")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Ilość")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IngredientId")
                         .HasColumnType("int");
 
                     b.Property<string>("Localization")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("MaterialId")
+                    b.Property<int?>("NewOrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrdersForWarehouseId")
                         .HasColumnType("int");
 
                     b.Property<long>("PalletNumber")
@@ -530,7 +521,11 @@ namespace Ingredients_order.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MaterialId");
+                    b.HasIndex("IngredientId");
+
+                    b.HasIndex("NewOrderId");
+
+                    b.HasIndex("OrdersForWarehouseId");
 
                     b.ToTable("PalettModel");
                 });
@@ -831,14 +826,38 @@ namespace Ingredients_order.Migrations
                 {
                     b.HasOne("Ingredients_order.Models.Ingredient", "Material")
                         .WithMany()
-                        .HasForeignKey("MaterialId");
+                        .HasForeignKey("IngredientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Ingredients_order.Models.NewOrder", "NewOrder")
+                        .WithMany("Paletts")
+                        .HasForeignKey("NewOrderId");
+
+                    b.HasOne("Ingredients_order.Models.OrdersForWarehouse", "OrdersForWarehouse")
+                        .WithMany("Paletts")
+                        .HasForeignKey("OrdersForWarehouseId");
 
                     b.Navigation("Material");
+
+                    b.Navigation("NewOrder");
+
+                    b.Navigation("OrdersForWarehouse");
                 });
 
             modelBuilder.Entity("Ingredients_order.Models.MachineModel", b =>
                 {
                     b.Navigation("Bins");
+                });
+
+            modelBuilder.Entity("Ingredients_order.Models.NewOrder", b =>
+                {
+                    b.Navigation("Paletts");
+                });
+
+            modelBuilder.Entity("Ingredients_order.Models.OrdersForWarehouse", b =>
+                {
+                    b.Navigation("Paletts");
                 });
 
             modelBuilder.Entity("Ingredients_order.Models.ProcessModel", b =>

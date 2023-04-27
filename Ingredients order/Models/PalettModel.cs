@@ -14,6 +14,11 @@ namespace Ingredients_order.Models
         public int Ilość { get; set; }
         public string Localization { get; set; }
         public string Status { get; set; }
-        
+        public int? NewOrderId { get; set; }
+        public NewOrder NewOrder { get;set; }
+        public int? OrdersForWarehouseId { get; set; }
+        public OrdersForWarehouse OrdersForWarehouse { get; set; }
+       // public string DataZamówienia { get; set; }
+       // public string DataRealizacji { get; set; }
     }
 }

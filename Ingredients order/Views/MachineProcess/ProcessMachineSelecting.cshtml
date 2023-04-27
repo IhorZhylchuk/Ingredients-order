@@ -104,19 +104,19 @@
                 </a>
                 <a href="~/Home/Index"
                    class="list-group-item list-group-item-action py-2 ripple" id="zleceniaButton">
-                    <i class="fas fa-chart-area fa-fw me-3"></i><span>Zlecenia</span>
+                    <i class="fas fa-list-ul fa-fw me-3"></i><span>Zlecenia</span>
                 </a>
                 <a href="~/MachineProcess/ProcessMachineSelecting"
                    class="list-group-item list-group-item-action py-2 ripple active" id="zamówieniaButton">
-                    <i class="fas fa-chart-pie fa-fw me-3"></i><span>Zamówienia</span>
+                    <i class="fas fa-edit fa-fw me-3"></i><span>Zamówienia</span>
                 </a>
                 <a href="~/Warehouse/WareHouseCount"
                    class="list-group-item list-group-item-action py-2 ripple" id="magazyn">
-                    <i class="fas fa-chart-pie fa-fw me-3"></i><span>Magazyn</span>
+                    <i class="fas fa-warehouse fa-fw me-3"></i><span>Magazyn</span>
                 </a>
                 <a href="~/Waste/Index"
                    class="list-group-item list-group-item-action py-2 ripple" id="magazyn">
-                    <i class="fas fa-chart-pie fa-fw me-3"></i><span>Odpad</span>
+                    <i class="fas fa-cube fa-fw me-3"></i><span>Odpad</span>
                 </a>
             </div>
         </div>
@@ -321,7 +321,7 @@
 
                 <div class="modal-body">
 
-                    <form id="consumption">
+                    <form id="consumptionForm">
 
                         <div class="modal-body">
                             <div class="form-group row">
@@ -370,7 +370,7 @@
                             </div>
                             <div class="form-group">
                                 <div class="col text-center">
-                                    <a id="konsumpcja" style="position:center" onclick="PalletUpdate()" class="btn btn-primary">Zapisz</a>
+                                    <a id="palletUpdate" style="position:center" onclick="PalletUpdate()" class="btn btn-primary">Zapisz</a>
                                 </div>
                             </div>
                         </div>
@@ -463,6 +463,10 @@
 
             $('#closeNewZlecenie').click(function () {
                 document.getElementById('noweZamówienie').reset();
+                document.location.reload();
+            });
+            $('#closeConsumption').click(function () {
+                document.getElementById('consumptionForm').reset();
                 document.location.reload();
             });
         $('#newOrder').modal({ backdrop: 'static', keyboard: false });
@@ -798,8 +802,13 @@
                     { data: "item3" },
 
                     {
-                        data: "item6", "render": function (data) {
-                            return "<div style='width:100%; position: center'><div class='btn-group' role='group' id='groupButton'><a class='btn btn-success btn-small' style = 'height: 5%; margin-left: 5px; margin-right: 5px;' data-bs-toggle='modal' onclick='Consumption("+data+")'>Konsumpcja</a><a class='btn btn-danger btn-small' style='height: 5 %' onclick=Zwrot(" + data + ") id='zwrot' >Zwrot na magazyn</a></div ></div >"
+                        data: "item6", "render": function (data, type, row) {
+                            if (row.item4 == "Dostarczone") {
+                                return "<div style='width:100%; position: center'><div class='btn-group' role='group' id='groupButton'><button type='button' class='btn btn-success btn-small' style = 'height: 5%; margin-left: 5px; margin-right: 5px;' data-bs-toggle='modal' onclick='Consumption(" + data + ")'>Konsumpcja</button><button type='button' class='btn btn-danger btn-small' style='height: 5 %' onclick=Zwrot(" + data + ") id='zwrot' >Zwrot na magazyn</button></div ></div >"
+                            }
+                            else {
+                                return "<div style='width:100%; position: center'><div class='btn-group' role='group' id='groupButton'><button type='button' class='btn btn-success btn-small' style = 'height: 5%; margin-left: 5px; margin-right: 5px;' data-bs-toggle='modal' disabled >Konsumpcja</button><button type='button' class='btn btn-danger btn-small' style='height: 5 %' disabled >Zwrot na magazyn</button></div ></div >"
+                            }
                         },
                         orderable: false,
                         searchable: false,
@@ -822,7 +831,10 @@
             $('#newOrder').find('#noweZamówienie').trigger('reset');
             $('#popover').attr('disabled', 'true');
             $('#warningText').text('');
-            setTimeout(function () { $('#orders').DataTable().ajax.reload() }, 300);
+            //setTimeout(function () { $('#orders').DataTable().ajax.reload() }, 300);
+            setTimeout(function () { document.location.reload() }, 300);
+
+
         }
         function GetMaterialNumber(type) {
             document.getElementById('materialNumber').addEventListener(type, function () {
@@ -853,8 +865,8 @@
         function Check() {;
             Add($("input.form-check-input:checked"), 'PostMethod', 0, $('#zleceniaList option:selected').val(), $('#processList option:selected').val(), $('#machinesList option:selected').val());
             Add($("#materialNumber"), 'PostMethod', parseInt(document.getElementById('materialCount').value), $('#zleceniaList option:selected').val(), $('#processList option:selected').val(), $('#machinesList option:selected').val());
-             setTimeout(function () { $('#orders').DataTable().ajax.reload() }, 300);
-            //setTimeout(function () { document.location.reload() }, 300);
+             //setTimeout(function () { $('#orders').DataTable().ajax.reload() }, 300);
+            setTimeout(function () { document.location.reload() }, 300);
         }
         function Add(inputValue, actionName, count, zlecenieNr, processId, machineId) {
             var favorite = [];
@@ -879,6 +891,7 @@
                 data: JSON.stringify(dataPass),
                 success: function (data) {
                     $('#alertModal').modal('show');
+                    $('#textAlert').css({ "text - align": "center", "color": "green", "font-weight": 600 });
                     $('#textAlert').text('Zamówienie przyjęte do realizacji!');
                     setTimeout(function () {
                         $('#alertModal').modal('hide');
@@ -916,13 +929,13 @@
             }
         }
         function Consumption(number) {
-
             $.ajax({
                 type: 'Get',
                 url: '@Url.Action("Consumption", "MachineProcess")',
-                dataType: 'json',
                 data: { 'palletNumber': number },
+                dataType: 'json',
                 success: function (data) {
+
                     $('#consumption').modal('show');
                     $(".modal-backdrop").remove();
                     if (data != null) {
@@ -933,7 +946,6 @@
                         GetDoc('totalCount').value = data['count'];
                         GetDoc('check').value = data['count'];
 
-
                     }
 
                 },
@@ -941,26 +953,6 @@
                     alert("Some error occured!");
                 }
             })
-            /*
-            var formDiv = $('<div/>');
-            $.get(url)
-                .done(function (response) {
-                    formDiv.html(response);
-                    Popup = formDiv.dialog({
-                        autoOpen: true,
-                        modal: true,
-                        draggable: true,
-                        position: { my: "center", at: "top", of: window },
-                        resizable: false,
-                        title: 'Konsumpcja materialów',
-                        height: 650,
-                        width: 400,
-                        close: function () {
-                            $(this).closest('.ui-dialog-content').dialog('destroy').remove();
-                        }
-                    });
-                });
-            */
         }
         function PalletUpdate() {
             $.ajax({
@@ -969,25 +961,54 @@
                 dataType: 'json',
                 data: { 'palettNumber': parseInt($('#numerPalety').val()), 'count': parseInt($('#totalCount').val())},
                 success: function (data) {
-                    $("#consumption .close").click();
+                    $("#consumption").modal('hide');
                     $('#alertModal').modal('show');
+                    $('#textAlert').css({ "text - align": "center", "color": "green", "font-weight": 600 });
                      $('#textAlert').text('The data has been saved!');
                      setTimeout(function () { $('#orders').DataTable().ajax.reload() }, 300);
                      setTimeout(function () {
                         $('#alertModal').modal('hide');
                      }, 1500);
-                    
+
                 },
                 error: function (data) {
-                    $("#consumption .close").click();
+                    $("#consumption").modal('hide');
                     $('#alertModal').modal('show');
-                    $('#textAlert').text('Wystąpił problem!');
+                    $('#textAlert').text('');
                     $('#textAlert').css({ "text - align": "center", "color": "red", "font-weight": 600 });
+                    setTimeout(function () { $('#orders').DataTable().ajax.reload() }, 300);
                     setTimeout(function () {
                         $('#alertModal').modal('hide');
                     }, 1500);
                 }
             });
+        }
+        function Zwrot(number) {
+                $.ajax({
+                type: 'Post',
+                url: '@Url.Action("PalletReturn", "MachineProcess")',
+                dataType: 'json',
+                data: { 'palletNumber': parseInt(number) },
+                success: function (data) {
+                    $('#alertModal').modal('show');
+                    $('#textAlert').css({ "text - align": "center", "color": "green", "font-weight": 600 });
+                    $('#textAlert').text('Paleta była oddana na magazyn!');
+                    setTimeout(function () { $('#orders').DataTable().ajax.reload() }, 300);
+                    setTimeout(function () {
+                        $('#alertModal').modal('hide');
+                    }, 1500);
+                },
+                error: function (response) {
+                    $('#alertModal').modal('show');
+                    $('#textAlert').css({ "text - align": "center", "color": "green", "font-weight": 600 });
+                    $('#textAlert').text('Paleta była oddana na magazyn!');
+                    setTimeout(function () { $('#orders').DataTable().ajax.reload() }, 300);
+                    setTimeout(function () {
+                        $('#alertModal').modal('hide');
+                    }, 1500);
+                }
+            })
+
         }
     </script>
 }

@@ -23,6 +23,7 @@
     input[type=number] {
         -moz-appearance: textfield;
     }
+
     .modal-backdrop {
         opacity: 0.01 !important;
     }
@@ -40,19 +41,19 @@
                 </a>
                 <a href="~/Home/Index"
                    class="list-group-item list-group-item-action py-2 ripple">
-                    <i class="fas fa-chart-area fa-fw me-3"></i><span>Zlecenia</span>
+                    <i class="fas fa-list-ul fa-fw me-3"></i><span>Zlecenia</span>
                 </a>
                 <a href="~/MachineProcess/ProcessMachineSelecting"
                    class="list-group-item list-group-item-action py-2 ripple">
-                    <i class="fas fa-chart-pie fa-fw me-3"></i><span>Zamówienia</span>
+                    <i class="fas fa-edit fa-fw me-3"></i><span>Zamówienia</span>
                 </a>
                 <a href="~/Warehouse/WareHouseCount"
                    class="list-group-item list-group-item-action py-2 ripple active">
-                    <i class="fas fa-chart-pie fa-fw me-3"></i><span>Magazyn</span>
+                    <i class="fas fa-warehouse fa-fw me-3"></i><span>Magazyn</span>
                 </a>
                 <a href="~/Waste/Index"
                    class="list-group-item list-group-item-action py-2 ripple" id="odpad">
-                    <i class="fas fa-chart-pie fa-fw me-3"></i><span>Odpad</span>
+                    <i class="fas fa-cube fa-fw me-3"></i><span>Odpad</span>
                 </a>
             </div>
         </div>
@@ -85,7 +86,7 @@
                     <form asp-action="PalletAdding" method="Post" id="addingPalletForm">
                         <div class="modal-body">
                             <div class="form-group">
-                                <input id="inputPalletNumber" placeholder="Prosze wpisać numer palety" class="form-control" min="10" maxlength="10" required  asp-for="PalletNumber" />
+                                <input id="inputPalletNumber" placeholder="Prosze wpisać numer palety" class="form-control" min="10" maxlength="10" required asp-for="PalletNumber" />
                             </div>
                             <div class="form-group">
                                 <select id="selectMaterialName" class="form-select" required asp-items="@ViewBag.MaterialNames">
@@ -96,7 +97,7 @@
                                 <input id="inputMaterialNumber" class="form-control" readonly asp-for="Material.MaterialNumber" />
                             </div>
                             <div class="form-group">
-                                <input id="inputMaterialCount"  placeholder="Kg" required class="form-control" asp-for="Ilość" />
+                                <input id="inputMaterialCount" placeholder="Kg" required class="form-control" asp-for="Ilość" />
                             </div>
                             <div class="form-group">
                                 <span id="warningText" style="color:red; font-size:small; font-style:normal"></span>
@@ -107,6 +108,75 @@
                                 </div>
                             </div>
 
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal hide fade" id="consumption" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="title" aria-hidden="true">
+        <div class="modal-dialog modal-m">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="title">Konsumpcja materialów</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="closeConsumption" aria-label="Close"></button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <form id="consumptionForm">
+
+                        <div class="modal-body">
+                            <div class="form-group row">
+                                <label for="process" class="col-sm-4 col-form-label">Numer palety:</label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" readonly id="numerPalety" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="process" class="col-sm-4 col-form-label">Numer materialu:</label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" readonly id="numerMaterialu" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="process" class="col-sm-4 col-form-label">Material:</label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" readonly id="material" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="process" class="col-sm-4 col-form-label">Lokalizacja:</label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" readonly id="lokalizacja" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="process" class="col-sm-4 col-form-label">Ilość:</label>
+                                <div class="input-group " style="display:table;">
+                                    <div class="col-sm-2" style="display: table-cell;">
+                                        <input class="form-control" type="number" readonly id="totalCount" />
+                                        <input id="check" hidden />
+                                    </div>
+                                    <div class="col-sm-2" style="display: table-cell;">
+                                        <input class="form-control" type="number" id="valueInput" />
+                                    </div>
+                                </div>
+                                <span id="warningTextForCount" style="color:red; font-size:small; font-style:normal"></span>
+                            </div>
+
+                            <div class="form-group" id="buttonsSection">
+                                <div class="col text-center">
+                                    <a id="konsumpcja" style="position:center" onclick="Konsumpcja()" class="btn btn-primary">Konsumpcja</a>
+                                    <a id="reverse" class="btn btn-primary" onclick="Reverse()">Reverse</a>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col text-center">
+                                    <a id="palletUpdate" style="position:center" onclick="PalletUpdate()" class="btn btn-primary">Zapisz</a>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -129,6 +199,23 @@
     </table>
 
 </main>
+<footer>
+    <div class="col text-center">
+        <div class="modal fade" id="alertModal" style="height: min-content; " tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content" style="background-color: transparent;border:none">
+
+                    <div class="modal-body" style="background-color: transparent">
+                        <p id="textAlert"></p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</footer>
+
 
 
 
@@ -167,6 +254,10 @@
                     }
                 })
             });
+            $('#closeConsumption').click(function () {
+                document.getElementById('consumptionForm').reset();
+                document.location.reload();
+            });
             dataTable = $('#pallets').DataTable({
                 dom: 'Bfrtip',
                 ajax: {
@@ -196,11 +287,11 @@
                     },
                     {
                         targets: 3,
-                        width: '13%'
+                        width: '18%'
                     },
                     {
                         targets: 6,
-                        width: '25%'
+                        width: '20%'
                     }
 
                 ],
@@ -213,8 +304,8 @@
                     { data: "ilość" },
                     { data: "localization" },
                     {
-                        data: "id", "render": function (data) {
-                            return "<div style='width:100%; position: center'><div class='btn-group' role='group' id='groupButton'><a class='btn btn-success btn-small' style = 'height: 5%; margin-left: 5px; margin-right: 5px;' data-toggle='modal' onclick='Details(" + data + ")'>Szczegóły</a><a class='btn btn-danger btn-small' style='height: 5 %' onclick=Delete(" + data + ") id='Delete' >Usuń zlecenie</a></div ></div >"
+                        data: "palletNumber", "render": function (data) {
+                            return "<div style='width:100%; position: center'><div class='btn-group' role='group' id='groupButton'><a class='btn btn-success btn-small' style = 'height: 5%; margin-left: 5px; margin-right: 5px;' data-toggle='modal' onclick='Consumption(" + data + ")'>Konsumpcja</a></div ></div >"
                         },
                         orderable: false,
                         searchable: false,
@@ -253,7 +344,7 @@
                 else {
                     $('#submitButton').attr('disabled', 'true');
                 }
-                
+
             })
            // $('input').change(function () {
             //    this.value = $.trim(this.value);
@@ -267,5 +358,100 @@
                 this.value = this.value.trim().slice(0, number);
             })
         }
+        function Konsumpcja() {
+            var value = GetDoc('valueInput').value;
+            var total = GetDoc('totalCount').value;
+            $('#warningTextForCount').text('');
+
+            var res = parseInt(total) - parseInt(value);
+
+            if (res < 0) {
+                $('#warningTextForCount').text('Prosze dokładnie sprawdzić prawidłowość wpisywanych danych!')
+            }
+            else {
+                $('#warningTextForCount').text('');
+                GetDoc('totalCount').value = res;
+                $('#valueInput').val('');
+            }
+
+        }
+        function Reverse() {
+            var value = GetDoc('valueInput').value;
+            var total = GetDoc('totalCount').value;
+            var check = GetDoc('check').value;
+
+            var res = parseInt(total) + parseInt(value);
+
+            //if (value.length == 0) {
+            //    $('#warningTextForCount').text('');
+           // }
+           // if (res > check) {
+           ///     $('#warningTextForCount').text('Na palecie nie może być więcej materialu niż przed początkiem zlecenia!')
+           // }
+             //{
+                $('#warningTextForCount').text('');
+                GetDoc('totalCount').value = res;
+                $('#valueInput').val('');
+           // }
+
+
+        }
+        function PalletUpdate() {
+            $.ajax({
+                type: 'Post',
+                url: '@Url.Action("PalletUpdate", "MachineProcess")',
+                dataType: 'json',
+                data: { 'palettNumber': parseInt($('#numerPalety').val()), 'count': parseInt($('#totalCount').val())},
+                success: function (data) {
+                    $("#consumption").modal('hide');
+                    $('#alertModal').modal('show');
+                    $('#textAlert').css({ "text - align": "center", "color": "green", "font-weight": 600 });
+                     $('#textAlert').text('The data has been saved!');
+                    setTimeout(function () { $('#pallets').DataTable().ajax.reload() }, 300);
+                     setTimeout(function () {
+                        $('#alertModal').modal('hide');
+                     }, 1500);
+
+                },
+                error: function (data) {
+                    $("#consumption").modal('hide');
+                    $('#alertModal').modal('show');
+                    $('#textAlert').text('');
+                    $('#textAlert').css({ "text - align": "center", "color": "red", "font-weight": 600 });
+                    setTimeout(function () { $('#pallets').DataTable().ajax.reload() }, 300);
+                    setTimeout(function () {
+                        $('#alertModal').modal('hide');
+                    }, 1500);
+                }
+            });
+        }
+        function Consumption(number) {
+    $.ajax({
+        type: 'Get',
+        url: '@Url.Action("Consumption", "MachineProcess")',
+        data: { 'palletNumber': number },
+        dataType: 'json',
+        success: function (data) {
+
+            $('#consumption').modal('show');
+            $(".modal-backdrop").remove();
+            if (data != null) {
+                GetDoc('numerPalety').value = data['nrPalety'];
+                GetDoc('numerMaterialu').value = data['nrMaterialu'];
+                GetDoc('material').value = data['materialName'];
+                GetDoc('lokalizacja').value = data['lokalizacja'];
+                GetDoc('totalCount').value = data['count'];
+                GetDoc('check').value = data['count'];
+
+            }
+
+        },
+        error: function (response) {
+            alert("Some error occured!");
+        }
+    })
+}
+
+
     </script>
 }

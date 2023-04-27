@@ -98,6 +98,62 @@ namespace Ingredients_order.Models
             };
 
             MainBinAttachment binAttachment = new MainBinAttachment();
+            const string ADMIN_ID = "a18be9c0-aa65-4af8-bd17-00bd9344e575";
+            const string ROLE_ADM_ID = ADMIN_ID;
+
+            const string NUsers_ID = "a12be9c5-aa65-4af6-bd97-00bd9344e575";
+            const string ROLE_NUser_ID = NUsers_ID;
+
+            modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole
+            {
+                Id = ROLE_ADM_ID,
+                Name = "Admin"
+            },
+            new IdentityRole
+            {
+                Id = ROLE_NUser_ID,
+                Name = "NormalUser"
+            });
+
+            var hasher = new PasswordHasher<UsersIdentity>();
+
+            List<UsersIdentity> users = new List<UsersIdentity>() {
+                new UsersIdentity
+                {
+                Id = ADMIN_ID,
+                NormalizedUserName = "Sara",
+                UserName = "Sara",
+                EmailConfirmed = true,
+                Email = "sara@gmail.com",
+                NormalizedEmail = "sara@gmail.com",
+                PasswordHash = hasher.HashPassword(null, "demo"),
+                SecurityStamp = string.Empty
+                },
+                new UsersIdentity
+                {
+                Id = NUsers_ID,
+                NormalizedUserName = "Petro",
+                UserName = "Petro",
+                EmailConfirmed = true,
+                Email = "petro@gmail.com",
+                NormalizedEmail = "petro@gmail.com",
+                PasswordHash = hasher.HashPassword(null, "demo"),
+                SecurityStamp = string.Empty
+                }
+            };
+            modelBuilder.Entity<UsersIdentity>().HasData(users);
+            modelBuilder.Entity<IdentityUserRole<string>>().HasData(new IdentityUserRole<string>
+            {
+                RoleId = ROLE_ADM_ID,
+                UserId = ADMIN_ID
+            }
+            ,
+            new IdentityUserRole<string>
+            {
+                RoleId = ROLE_NUser_ID,
+                UserId = NUsers_ID
+            }
+            );
             modelBuilder.Entity<ProcessModel>().HasData(binAttachment.Processes);
             modelBuilder.Entity<MachineModel>().HasData(binAttachment.Machines);
 
@@ -110,16 +166,17 @@ namespace Ingredients_order.Models
         {
             return Math.Round((totalCount / 1000) * item, 2);
         }
-        public static List<Tuple<int, string, double, string, int>> GetOrdersDefault (ApplicationDbContext _dbContext, List<NewOrder> newOrders, List<OrdersForWarehouse> ordersForWarehouse) {
+        /*
+        public static List<Tuple<int, string, int, string, int>> GetOrdersDefault (ApplicationDbContext _dbContext, List<NewOrder> newOrders, List<OrdersForWarehouse> ordersForWarehouse) {
             List<string> ingredients = new List<string>();
-            List<Tuple<int, string, double, string, int>> orders = new List<Tuple<int, string, double, string, int>>();
+            List<Tuple<int, string, int, string, int>> orders = new List<Tuple<int, string, int, string, int>>();
 
             if (ordersForWarehouse == null)
             {
                 for (var i = 0; i < newOrders.Count(); i++)
                 {
                     ingredients.Add(_dbContext.Ingredients.Where(n => n.MaterialNumber == newOrders[i].IngredientNumber).Select(n => n.Name).FirstOrDefault());
-                    orders.Add(new Tuple<int, string, double, string, int>(newOrders.Select(n => n.IngredientNumber).ToList()[i], ingredients[i], newOrders.Select(n => n.Count).ToList()[i], newOrders.Select(s => s.Status).ToList()[i], newOrders.Select(i => i.Id).ToList()[i]));
+                    orders.Add(new Tuple<int, string, int, string, int>(newOrders.Select(n => n.IngredientNumber).ToList()[i], ingredients[i], newOrders.Select(n => n.Paletts.Select(i => i.Ilość).First()).ToList()[i], newOrders.Select(s => s.Status).ToList()[i], newOrders.Select(i => i.Id).ToList()[i]));
                 }
             }
             else
@@ -127,12 +184,12 @@ namespace Ingredients_order.Models
                 for (var i = 0; i < ordersForWarehouse.Count(); i++)
                 {
                     ingredients.Add(_dbContext.Ingredients.Where(n => n.MaterialNumber == ordersForWarehouse[i].IngredientNumber).Select(n => n.Name).FirstOrDefault());
-                    orders.Add(new Tuple<int, string, double, string, int>(ordersForWarehouse.Select(n => n.IngredientNumber).ToList()[i], ingredients[i], ordersForWarehouse.Select(n => n.Count).ToList()[i], ordersForWarehouse.Select(s => s.Status).ToList()[i], ordersForWarehouse.Select(i => i.Id).ToList()[i]));
+                    orders.Add(new Tuple<int, string, int, string, int>(ordersForWarehouse.Select(n => n.IngredientNumber).ToList()[i], ingredients[i], ordersForWarehouse.Select(n => n.Paletts.Select(c => c.Ilość).First()).ToList()[i], ordersForWarehouse.Select(s => s.Status).ToList()[i], ordersForWarehouse.Select(i => i.Id).ToList()[i]));
                 }
             }
 
             return orders;
-        }
+        } */
         public static BinAttachmentModel Detach(ApplicationDbContext dBContext, string binNumber)
         {
             var bin = dBContext.Bins.Where(n => n.BinNumber == binNumber).Select(b => b).FirstOrDefault();

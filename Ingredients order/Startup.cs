@@ -2,6 +2,7 @@ using Ingredients_order.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +27,7 @@ namespace Ingredients_order
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
+            services.AddIdentity<UsersIdentity, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
             services.AddControllersWithViews();
         }
 
@@ -50,14 +51,15 @@ namespace Ingredients_order
             app.UseAuthentication();
 
             app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    // pattern: "{controller=MachineProcess}/{action=Consumption}/{id?}");
-                    //GetOrdersForWarehouse
-                     pattern: "{controller=WareHouse}/{action=WareHouseCount}/{id?}");
-                    //pattern: "{controller=Home}/{action=GetOrdersForWarehouse}/{id?}");
+                    // pattern: "{controller=MachineProcess}/{action=GetOrdersBySelect}/{id?}");
+                     //pattern: "{controller=WareHouse}/{action=GetOrdersForWarehouse}/{id?}");
+                     //pattern: "{controller=WareHouse}/{action=WareHouseCount}/{id?}");
+                    pattern: "{controller=Home}/{action=Login}/{id?}");
 
             });
         }
