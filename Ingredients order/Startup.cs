@@ -56,11 +56,7 @@ namespace Ingredients_order
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    // pattern: "{controller=MachineProcess}/{action=GetOrdersBySelect}/{id?}");
-                     //pattern: "{controller=WareHouse}/{action=GetOrdersForWarehouse}/{id?}");
-                     //pattern: "{controller=WareHouse}/{action=WareHouseCount}/{id?}");
                     pattern: "{controller=Home}/{action=Login}/{id?}");
-
             });
         }
     }

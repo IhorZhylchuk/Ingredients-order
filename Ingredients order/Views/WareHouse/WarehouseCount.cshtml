@@ -236,21 +236,20 @@
             $('#selectMaterialName').on('change', function () {
                 $.ajax({
                     method: 'Get',
-                    url: '/WareHouse/GetMaterial',
-                    data: { 'materilName': $('#selectMaterialName option:selected').text() },
+                    url: '@Url.Action("GetMaterial", "WareHouse")',
+                    data: { 'materilName': $('#selectMaterialName option:selected').text(), 'palletNumber': $('#inputPalletNumber').val()},
                     success: function (data) {
-                       //->изначально if (data['number'] != null && data['number'] != 0) {
-                            if (data['number'] != null && data['number'] != 0) {
-                                $('#inputMaterialNumber').val(data['number']);
+                        if (data['number'] != null && data['number'] != 0) {
+                            $('#inputMaterialNumber').val(data['number']);
+                            if (data['status'] != true) {
                                 $('#submitButton').removeAttr('disabled');
                                 $('#warningText').text('');
-
+                            }
                         } else {
                                 $('#inputMaterialNumber').val('');
                                 $('#submitButton').attr('disabled', 'true');
                                 $('#warningText').text('Prosze dokładnie sprawdzić prawidłowość wszystkich danych!');
-
-                        }
+                        } 
                     }
                 })
             });
@@ -258,6 +257,7 @@
                 document.getElementById('consumptionForm').reset();
                 document.location.reload();
             });
+            
             dataTable = $('#pallets').DataTable({
                 dom: 'Bfrtip',
                 ajax: {
@@ -318,18 +318,20 @@
                     cell.innerHTML = i + 1;
                 });
             }).draw();
-
+            $('#closePalletAdding').click(function () {
+                document.getElementById('addingPalletForm').reset();
+                document.location.reload();
+            });
             Trim('inputPalletNumber', 10);
             Trim('inputMaterialCount', 5);
             document.getElementById('inputPalletNumber').addEventListener('input', function () {
                 if (this.value.length == 10) {
                     $.ajax({
                         type: 'Get',
-                        url: 'WareHouse/CheckPalletNumber/',
+                        url: '@Url.Action("CheckPalletNumber", "WareHouse")',
                         dataType: 'json',
                         data: { 'number': this.value },
                         success: function (data) {
-                            //  alert(data['result']);
                             if (data['result'] != true && data['result'] != null && $('#selectMaterialName option:selected').val() != -1) {
                                 $('#submitButton').removeAttr('disabled');
                                 $('#warningText').text('');
@@ -337,7 +339,7 @@
                             else {
                                 $('#submitButton').attr('disabled', 'true');
                                 $('#warningText').text('Prosze dokładnie sprawdzić prawidłowość wszystkich danych!');
-                            }
+                            } 
                         }
                     })
                 }
@@ -346,9 +348,6 @@
                 }
 
             })
-           // $('input').change(function () {
-            //    this.value = $.trim(this.value);
-            //});
         })
         function Check() {
             alert(document.getElementById('inputPalletNumber').value);
@@ -382,17 +381,9 @@
 
             var res = parseInt(total) + parseInt(value);
 
-            //if (value.length == 0) {
-            //    $('#warningTextForCount').text('');
-           // }
-           // if (res > check) {
-           ///     $('#warningTextForCount').text('Na palecie nie może być więcej materialu niż przed początkiem zlecenia!')
-           // }
-             //{
                 $('#warningTextForCount').text('');
                 GetDoc('totalCount').value = res;
                 $('#valueInput').val('');
-           // }
 
 
         }

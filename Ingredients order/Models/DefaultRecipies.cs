@@ -166,30 +166,7 @@ namespace Ingredients_order.Models
         {
             return Math.Round((totalCount / 1000) * item, 2);
         }
-        /*
-        public static List<Tuple<int, string, int, string, int>> GetOrdersDefault (ApplicationDbContext _dbContext, List<NewOrder> newOrders, List<OrdersForWarehouse> ordersForWarehouse) {
-            List<string> ingredients = new List<string>();
-            List<Tuple<int, string, int, string, int>> orders = new List<Tuple<int, string, int, string, int>>();
 
-            if (ordersForWarehouse == null)
-            {
-                for (var i = 0; i < newOrders.Count(); i++)
-                {
-                    ingredients.Add(_dbContext.Ingredients.Where(n => n.MaterialNumber == newOrders[i].IngredientNumber).Select(n => n.Name).FirstOrDefault());
-                    orders.Add(new Tuple<int, string, int, string, int>(newOrders.Select(n => n.IngredientNumber).ToList()[i], ingredients[i], newOrders.Select(n => n.Paletts.Select(i => i.Ilość).First()).ToList()[i], newOrders.Select(s => s.Status).ToList()[i], newOrders.Select(i => i.Id).ToList()[i]));
-                }
-            }
-            else
-            {
-                for (var i = 0; i < ordersForWarehouse.Count(); i++)
-                {
-                    ingredients.Add(_dbContext.Ingredients.Where(n => n.MaterialNumber == ordersForWarehouse[i].IngredientNumber).Select(n => n.Name).FirstOrDefault());
-                    orders.Add(new Tuple<int, string, int, string, int>(ordersForWarehouse.Select(n => n.IngredientNumber).ToList()[i], ingredients[i], ordersForWarehouse.Select(n => n.Paletts.Select(c => c.Ilość).First()).ToList()[i], ordersForWarehouse.Select(s => s.Status).ToList()[i], ordersForWarehouse.Select(i => i.Id).ToList()[i]));
-                }
-            }
-
-            return orders;
-        } */
         public static BinAttachmentModel Detach(ApplicationDbContext dBContext, string binNumber)
         {
             var bin = dBContext.Bins.Where(n => n.BinNumber == binNumber).Select(b => b).FirstOrDefault();

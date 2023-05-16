@@ -24,7 +24,7 @@ namespace Ingredients_order.Controllers
             _signInManager = signInManager;
             _userManager = user;
         }
-        
+
         [HttpGet]
         public IActionResult Login()
         {
@@ -42,41 +42,60 @@ namespace Ingredients_order.Controllers
             {
                 try
                 {
-                var user = await _userManager.FindByEmailAsync(model.Email);
-                if (user != null)
-                {
-                    var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, false);
-                    if (result.Succeeded)
+                    var user = await _userManager.FindByEmailAsync(model.Email);
+                    if (user != null)
                     {
-                        return RedirectToAction("Index", "Home");
+                        var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, false);
+                        if (result.Succeeded)
+                        {
+                            return RedirectToAction("Index", "Home");
+                        }
                     }
+
+                    ViewBag.Result = "Error";
+                    ModelState.AddModelError("", "User was not found. Chek your email or password!");
+                    return View();
+
+
                 }
-
-                ViewBag.Result = "Error";
-                ModelState.AddModelError("", "User was not found. Chek your email or password!");
-                return View();
-
-
-            }
                 catch (Exception ex)
                 {
-                ex.Message.ToString();
+                    ex.Message.ToString();
                 }
             }
             return View();
         }
 
         [Authorize]
-        public JsonResult GetZlecenie(int numerZlecenia)
+        public JsonResult GetZlecenie(int? numerZlecenia)
         {
-            var search = _dbContext.Items.Select(i => i.NrZlecenia).ToList().Any(i => i == numerZlecenia);
-            return Json(new { result = search });
+            if(numerZlecenia != null)
+            {
+                try
+                {
+                    var search = _dbContext.Items.Select(i => i.NrZlecenia).ToList().Any(i => i == numerZlecenia);
+                    return Json(new { result = search });
+                }
+                catch(Exception e)
+                {
+                    e.Message.ToString();
+                }
+                
+            }
+            return Json(null);
         }
         [Authorize]
         public JsonResult GetZlecenia()
         {
-            var zlecenia = _dbContext.Items.Select(i => i).ToList();
-            return Json(zlecenia);
+            try
+            {
+                var zlecenia = _dbContext.Items.Select(i => i).ToList();
+                return Json(zlecenia);
+            }catch(Exception e)
+            {
+                e.Message.ToString();
+            }
+            return null;
         }
 
         [Authorize]
@@ -281,7 +300,7 @@ namespace Ingredients_order.Controllers
                     e.Message.ToString();
                 }
             }
-            return Json(null);
+            return null;
         }
 
         [Authorize]

@@ -146,7 +146,6 @@
                             var result = null;
                             $.ajax({
                                 type: 'Get',
-                                // url: '/WareHouse/GetStatus/' + parseInt(data),
                                 url: '@Url.Action("GetStatus", "WareHouse")',
                                 dataType: 'json',
                                 data: { 'palletNumber': JSON.stringify(data) },

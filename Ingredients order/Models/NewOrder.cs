@@ -9,7 +9,6 @@ namespace Ingredients_order.Models
     {
         public IEnumerable<PalettModel> Paletts { get; set; }
 
-        // public long Palett { get; set; }
     }
     public class OrdersForWarehouse : DefaultForOrders
     {

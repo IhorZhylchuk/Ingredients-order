@@ -37,10 +37,17 @@ namespace Ingredients_order.Controllers
         [Authorize]
         public JsonResult MachineList(int processId)
         {
-            //var machines = _dbContext.Machines.Where(p => p.ProcessModelId == processId).Select(m => m.Name.Replace("\"", string.Empty).Trim()).ToList();
-            var machines = _dbContext.Machines.Where(p => p.ProcessModelId == processId).Select(m => m).ToList();
-            //return Json(machines);
-            return Json(new { id = machines.Select(i => i.Id).ToList(), name = machines.Select(n => n.Name.Replace("\"", string.Empty).Trim()).ToList() }) ;
+            try
+            {
+                var machines = _dbContext.Machines.Where(p => p.ProcessModelId == processId).Select(m => m).ToList();
+                return Json(new { id = machines.Select(i => i.Id).ToList(), name = machines.Select(n => n.Name.Replace("\"", string.Empty).Trim()).ToList() });
+            }
+            catch (Exception e)
+            {
+                e.Message.ToString();
+                return null;
+            }
+
         }
 
         [Authorize]
@@ -77,8 +84,8 @@ namespace Ingredients_order.Controllers
             catch (Exception e)
             {
                 e.Message.ToString();
+                return null;
             }
-            return Json(null);
 
         }
 
