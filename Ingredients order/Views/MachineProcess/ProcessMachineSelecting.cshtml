@@ -1,7 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
     var process = ViewBag.Processes;
-    //Layout = "_MenuLayout.cshtml";
 
 }
 <link href="~/css/site.css" rel="stylesheet" />
@@ -445,18 +444,6 @@
 
                     });
 
-            /*
-            GetDoc('konsumpcja').addEventListener('keyup', function () {
-                if (this.value.length == 0) {
-                    $('#warningTextForCount').text('');
-                }
-            });
-            GetDoc('reverse').addEventListener('keyup', function () {
-                if (this.value.length == 0) {
-                    $('#warningTextForCount').text('');
-                }
-            });
-            */
             HideBoxSection('materialNumber', 'input', 7);
             HideBoxSection('materialNumber', 'keyup', 7);
             HideBoxSection('materialCount', 'keyup', 4);
@@ -827,11 +814,9 @@
         }
         function AddByNum() {
             Add($("#nrMaterialu"), 'PostMethod', parseInt(count.value), $('#zleceniaList option:selected').val(), $('#processList option:selected').val(), $('#machinesList option:selected').val());
-            //Add($("#nrMaterialu"), 'SetByNumberInput', parseInt(count.value), $('#zleceniaList option:selected').val(), $('#processList option:selected').val(), $('#machinesList option:selected').val());
             $('#newOrder').find('#noweZamówienie').trigger('reset');
             $('#popover').attr('disabled', 'true');
             $('#warningText').text('');
-            //setTimeout(function () { $('#orders').DataTable().ajax.reload() }, 300);
             setTimeout(function () { document.location.reload() }, 300);
 
 
@@ -865,7 +850,6 @@
         function Check() {;
             Add($("input.form-check-input:checked"), 'PostMethod', 0, $('#zleceniaList option:selected').val(), $('#processList option:selected').val(), $('#machinesList option:selected').val());
             Add($("#materialNumber"), 'PostMethod', parseInt(document.getElementById('materialCount').value), $('#zleceniaList option:selected').val(), $('#processList option:selected').val(), $('#machinesList option:selected').val());
-             //setTimeout(function () { $('#orders').DataTable().ajax.reload() }, 300);
             setTimeout(function () { document.location.reload() }, 300);
         }
         function Add(inputValue, actionName, count, zlecenieNr, processId, machineId) {

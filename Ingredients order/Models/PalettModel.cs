@@ -18,7 +18,5 @@ namespace Ingredients_order.Models
         public NewOrder NewOrder { get;set; }
         public int? OrdersForWarehouseId { get; set; }
         public OrdersForWarehouse OrdersForWarehouse { get; set; }
-       // public string DataZamówienia { get; set; }
-       // public string DataRealizacji { get; set; }
     }
 }

@@ -374,7 +374,6 @@
                     $.ajax({
                         type: 'Get',
                         url: '@Url.Action("GetZlecenie", "Home")/',
-                        //url: 'Home/GetZlecenie/',
                         dataType: 'json',
                         data: { 'numerZlecenia': inputValue },
                         success: function (data) {
@@ -411,7 +410,6 @@
                 $.ajax({
                     type: 'Get',
                     url: '@Url.Action("GetZlecenie", "Home")/',
-                    //url: 'Home/GetZlecenie/',
                     dataType: 'json',
                     data: { 'numerZlecenia': input },
                     success: function (data) {
@@ -605,47 +603,14 @@
                     $('#zlecenieId').val(data['id']);
                     $('#nrZlecenieUpdate').val(data['nrZlecenia']);
                     $('#recipiesUpdate').val(data['recipesName']).attr('selected', 'selected');
-                   // $('#recipies').prop('disabled', true);
                     $('#countUpdate').val(data['count']);
                     $('#opakowanieUpdate').val(data['opakowanie']).attr('selected', 'selected');
-                   // $('#opakowanie').prop('disabled', true);
                     $('#dekelUpdate').val(data['pokrywaNekrętka']).attr('selected', 'selected');
-                    //$('#dekel').prop('disabled', true);
                     $('#etykietaUpdate').val(data['naklejka']).attr('selected', 'selected');
                     var select = ['recipiesUpdate', 'opakowanieUpdate', 'dekelUpdate', 'etykietaUpdate'];
-                    // for (var i = 0; i < select.length; i++) {
                     $.each(select, function (index, element) {
                         SelectChanged(element);
-                        //alert(element);
                     });
-
-                   // SelectChanged('recipiesUpdate');
-                   // SelectChanged('opakowanieUpdate');
-                   // SelectChanged('dekelUpdate');
-                  //  SelectChanged('etykietaUpdate');
-
-                   // }
-                    /* if (Check('#recipiesUpdate') && Check('#opakowanieUpdate') && Check('#dekelUpdate') && Check('#etykietaUpdate') && countUpdate.value >= 500 && countUpdate.value <= 3000) {
-                        $('#submitButtonUpdate').removeAttr('disabled');
-                        $('#warningTextForOrderUpdate').text("");
-                    }
-                    else {
-                        $('#submitButtonUpdate').attr('disabled', 'true');
-                        $('#warningTextForOrderUpdate').text('Prosze dokładnie sprawdzić czy wszystkie opcje są wybrane!');
-                    } */
-                    //$('#etykieta').prop('disabled', true);
-                    //$('#title').text('Zmiana zlecenia');
-                    //$('#submitButton').removeAttr('disabled');
-                    /*
-                    $('#submitButton').on('click', function () {
-                        $('#noweZlecenie').submit();
-                        setTimeout(function () {
-                            FormChange();
-                        }, 300);
-                    })
-                    $('#closeNewZlecenie').on('click', function () {
-                        FormChange();
-                    }) */
                 },
                 error: function (response) {
                     alert('Some error occured!');

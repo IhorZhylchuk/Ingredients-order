@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ingredients_order.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230427214821_Update_3")]
-    partial class Update_3
+    [Migration("20230505224500_Initial_1")]
+    partial class Initial_1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -874,13 +874,13 @@ namespace Ingredients_order.Migrations
                         {
                             Id = "a18be9c0-aa65-4af8-bd17-00bd9344e575",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f809908c-4767-4af5-9fa0-d5c7db1e2587",
+                            ConcurrencyStamp = "36b4c701-25a5-4b2f-ace6-9c5c11459daa",
                             Email = "sara@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "sara@gmail.com",
                             NormalizedUserName = "Sara",
-                            PasswordHash = "AQAAAAEAACcQAAAAEHeHjJo8XU4YiZVQbLTSPpHcQp2JDi5NOu/ueR2q22hfzRHjJ7lBY4D0Y5+Zxyy3YQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEBjXqAuibzCziw9z0sM6PEowND7Wdy/kSC3EsWavfQLogTvpQRzy2x+YdHIi4xmZNw==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -890,13 +890,13 @@ namespace Ingredients_order.Migrations
                         {
                             Id = "a12be9c5-aa65-4af6-bd97-00bd9344e575",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a655dde8-d031-4ea3-9ef4-e1d2773a9a8c",
+                            ConcurrencyStamp = "5afc610d-42c9-49c9-a5f3-69d110bfedc3",
                             Email = "petro@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "petro@gmail.com",
                             NormalizedUserName = "Petro",
-                            PasswordHash = "AQAAAAEAACcQAAAAEIGC2VEMna8dVjHBtCaLPmCzKgGnmYpeUgqKhp/RKR+Lqm7uPJr9/Qzm0F4rsdWG1g==",
+                            PasswordHash = "AQAAAAEAACcQAAAAECtWUYaCyzUPsiIZM8+N10brXxfjeuEghpZIXNy051hB/ZBVmEeyNIg+WjIHf1+C8A==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -934,13 +934,13 @@ namespace Ingredients_order.Migrations
                         new
                         {
                             Id = "a18be9c0-aa65-4af8-bd17-00bd9344e575",
-                            ConcurrencyStamp = "7af921f5-2883-47e3-b123-c08ae3983d3f",
+                            ConcurrencyStamp = "731ed15c-2220-449d-b23a-43ef1b2eaa24",
                             Name = "Admin"
                         },
                         new
                         {
                             Id = "a12be9c5-aa65-4af6-bd97-00bd9344e575",
-                            ConcurrencyStamp = "ffdbe5ab-9e98-48fd-b54c-8c40175ad8c7",
+                            ConcurrencyStamp = "f805f473-f6e9-4af7-98bc-ce9492b603d8",
                             Name = "NormalUser"
                         });
                 });

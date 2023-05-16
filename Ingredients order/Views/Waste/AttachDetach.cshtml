@@ -194,15 +194,8 @@
                         type: 'POST',
                         url: '/Home/Detach/',
                         data: { 'binNumber': binNumber },
-
-                        //url: 'Url.Action("Detach", "Home")/00-20-10-336',
                     success: function(data) {
                         if (data.success) {
-                            //window.location.reload();
-                            //$('#mainWindow').dialog('refresh');
-                            //$('#mainWindow').location.reload();
-                            //alert("Something went wrong!")
-                           // $('#binsManagement').DataTable().ajax.reload(null, false);
                             setTimeout(function () {window.location.reload()}, 1000);
                         }
                     }
@@ -236,8 +229,6 @@
                         $('#detachButton').attr('hidden', 'true');
                         $('#binAdding').val('');
                         $('#binAdding').removeAttr('disabled');
-
-                       // alert(JSON.stringify(data));
                     }
                 }
             })

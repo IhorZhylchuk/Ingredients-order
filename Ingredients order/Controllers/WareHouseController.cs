@@ -26,7 +26,7 @@ namespace Ingredients_order.Controllers
         public IActionResult WareHouseCount()
         {
             var materials = _dbContext.Ingredients.Select(i => i).ToList();
-            ViewBag.MaterialNames = new SelectList(materials.Where(n => n.Name != "Woda").Select(n => new {n.Id, n.Name}).ToList(), "Id", "Name");
+            ViewBag.MaterialNames = new SelectList(materials.Where(n => n.Name != "Woda").Select(n => new { n.Id, n.Name }).ToList(), "Id", "Name");
             return View();
         }
         [Authorize]
@@ -37,7 +37,7 @@ namespace Ingredients_order.Controllers
                 var orders = _dbContext.PalettModel.Select(p => new { p.Id, p.Ilość, p.Localization, p.Material.Name, p.Material.MaterialNumber, p.PalletNumber }).ToList();
                 return Json(orders);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 e.Message.ToString();
             }
@@ -78,7 +78,7 @@ namespace Ingredients_order.Controllers
 
                 return Json(orders.Select(e => e.Item1).ToList());
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 e.Message.ToString();
             }
@@ -88,7 +88,7 @@ namespace Ingredients_order.Controllers
         [Authorize]
         public JsonResult CheckPalletNumber(string number)
         {
-            if(number != null)
+            if (number != null)
             {
                 try
                 {
@@ -107,7 +107,7 @@ namespace Ingredients_order.Controllers
         [HttpPost]
         public async Task<IActionResult> PalletAdding(PalettModel pallet)
         {
-            if(pallet != null)
+            if (pallet != null)
             {
                 try
                 {
@@ -136,16 +136,18 @@ namespace Ingredients_order.Controllers
 
         }
         [Authorize]
-        public JsonResult GetMaterial(string materilName)
+        public JsonResult GetMaterial(string materilName, string palletNumber)
         {
-            if(materilName != null)
+            if (materilName != null)
             {
                 try
                 {
                     var materialNumber = _dbContext.Ingredients.Where(n => n.Name == materilName).Select(n => n.MaterialNumber).SingleOrDefault();
-                    return Json(new { number = materialNumber });
+                    var check = _dbContext.PalettModel.Select(n => n.PalletNumber).Contains(long.Parse(palletNumber));
+
+                    return Json(new { number = materialNumber, status = check });
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     e.Message.ToString();
                 }
@@ -156,7 +158,7 @@ namespace Ingredients_order.Controllers
         [HttpPost]
         public async Task<JsonResult> DeleteOrder(long palletNumber)
         {
-            if(palletNumber != 0)
+            if (palletNumber != 0)
             {
                 try
                 {
@@ -182,15 +184,15 @@ namespace Ingredients_order.Controllers
         [HttpGet]
         public JsonResult GetStatus(string palletNumber)
         {
-            
-            if(palletNumber != null)
+
+            if (palletNumber != null)
             {
                 try
                 {
                     var palletStatus = _dbContext.PalettModel.Where(n => n.PalletNumber == long.Parse(palletNumber)).Select(i => i.Status).First();
                     return Json(palletStatus);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     e.Message.ToString();
                 }
@@ -199,9 +201,9 @@ namespace Ingredients_order.Controllers
         }
         [Authorize]
         [HttpPost]
-        public async Task<JsonResult> ZmianaStatusu(string  palletNumber)
+        public async Task<JsonResult> ZmianaStatusu(string palletNumber)
         {
-            if(palletNumber != null)
+            if (palletNumber != null)
             {
                 try
                 {
@@ -220,11 +222,10 @@ namespace Ingredients_order.Controllers
                 {
                     e.Message.ToString();
                 }
-    
+
             }
             return Json("Some error occured!");
         }
-
 
     }
 }
