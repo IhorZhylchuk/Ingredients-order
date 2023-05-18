@@ -124,8 +124,8 @@ namespace Ingredients_order.Models
                 NormalizedUserName = "Sara",
                 UserName = "Sara",
                 EmailConfirmed = true,
-                Email = "sara@gmail.com",
-                NormalizedEmail = "sara@gmail.com",
+                Email = "demo",
+                NormalizedEmail = "demo",
                 PasswordHash = hasher.HashPassword(null, "demo"),
                 SecurityStamp = string.Empty
                 },
