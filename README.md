@@ -4,7 +4,7 @@
 
 
 #### Prerequirements
-- Visual Studio 2019+
+- Visual Studio 2019
 - SQL Server
 
 
@@ -21,6 +21,6 @@
 - Set .Web project as Startup Project and build the project.
 - Run the application.
 
-- Email - <b>demo </b>(can be changed if needed)
+- Email - <b>sara@gmail.com</b>(can be changed if needed)
 - Password - <b>demo</b>
 
