@@ -7,20 +7,32 @@
 - Visual Studio 2019
 - SQL Server
 
-
 #### Technologies and Frameworks
-- ASP.NET Core
+- ASP.NET Core 3.1
 - JavaScript,
 - jQuery,
-- Entity Framework Core,
+- Entity Framework Core 5.0,
 - Bootstrap 5
 
-
 #### How To Run
-- Open solution in Visual Studio 2019
-- Set .Web project as Startup Project and build the project.
-- Run the application.
+Clone this repository to your local machine:<br/>
+<b>````git clone https://github.com/IhorZhylchuk/Ingredients-order.git````</b>
+<br/>
+<br/>
+Navigate to the project directory and restore dependencies:
+<br/>
+<b>```cd YOUR_REPOSITORY```</b><br/>
+<b>```dotnet restore```</b><br/>
 
-- Email - <b>sara@gmail.com</b>(can be changed if needed)
-- Password - <b>demo</b>
+Open project in IDE, in <b>```appsettings.json```</b> enter your server name, run the following commands:<br/>
+<b>```add-migration MIGRATION_NAME```</b> then run <br/>
+<b>```update-database```</b><br/>
+
+You can run the app by pressing the "Play" button in your IDE or by running the following command in the terminal:
+<br/>
+<b>```dotnet run```</b>
+<br/>
+
+- Email - <b>```sara@gmail.com```</b>(can be changed if needed)
+- Password - <b>```demo```</b>
 
