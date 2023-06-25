@@ -59,11 +59,11 @@ Select menu item ```Magazyn```, click on the button ```Pallet adding```, when th
 After appearing in the table, user can see all the details about the pallet, ```quantity``` of the material, ```location``` and the user can also by clickin on ```Konsumpcja``` change ```quantity``` or even ```delete``` the pallet. ```Manipulations``` with the pallet which was not ```submited``` by clicking on the button ```Zapisz``` will have no result. <br/><br/>
 ![Konsupcja_warehouse](https://github.com/IhorZhylchuk/Ingredients-order/assets/57155768/21671b15-bd50-48bc-a9cb-a322b490e91e)
 <br/><br/>
-<b>2. Ordering materials</b><br/><br/>
+<b>3. Ordering materials</b><br/><br/>
 Select menu item ```Zamówienia```, then secelet from the dropdown menu ```Orders``` the ```main order```, from the dropdown ```Process``` select ```process/localization``` and from the ```Machine``` select specific ```machine/area``` for affixing the pallet with materials. <br/><br/>
 ![Selecting_Machine](https://github.com/IhorZhylchuk/Ingredients-order/assets/57155768/a32930d8-e274-4a35-aaa0-98d26364b895)
 <br/><br/>
-By clicking on the button ```Zamówienie```, user can order ```materials``` from the warehouse and affix pallet to the machine. When the window appear, user should select ```materials``` by clicking on the ```Wybierz z listy```, which shows all the ingredients the ```main order``` contain and select material. There are no possibility for ordering the same material several times by selecting from the list. If material was ordered ```one time``` it will gone from the list. But, the user ```can order``` more material if needed by putting ```material number``` which can be ```copied``` from the ```main order's``` details and ```quantity``` to the inputs. <br/><br/>
+By clicking on the button ```Zamówienie```, user can order ```materials``` from the warehouse and affix pallet to the machine. When the window appear, user should select ```materials``` by clicking on the ```Wybierz z listy```, which shows all the ingredients the ```main order``` contain and select material. There are no possibility for ordering the same material several times for the same ```main order``` by selecting from the list. If material was ordered ```one time``` it will gone from the list. But, the user ```can order``` more material if needed by putting ```material number``` which can be ```copied``` from the ```main order's``` details and ```quantity``` to the inputs. After submiting, a ```dialog window``` for comment will appear, in which the user should write why he/she is ordering the material which was ```ordered``` early for the same ```main order```. <br/><br/>
 
 ![OrderingMaterialsList](https://github.com/IhorZhylchuk/Ingredients-order/assets/57155768/ac1d3163-a680-491e-b662-323c39c7bc56)  <br/><br/>
 
@@ -74,7 +74,12 @@ For ```unlocking``` the pallets, user should go to ```Magazyn``` and click on ``
 ![UnlockPallet](https://github.com/IhorZhylchuk/Ingredients-order/assets/57155768/60092cc5-af64-4ec5-9106-585c87adaea0)
 <br/><br/>
 Now, user can make manipilations with pallets, which were ordered. User can ```consume``` quantity, ```reverse``` or move pallet to the ```warehouse```.
-![AfterUnlocking](https://github.com/IhorZhylchuk/Ingredients-order/assets/57155768/ebdfa420-9a1b-466c-b6d2-084348c8fc43)
+![AfterUnlocking](https://github.com/IhorZhylchuk/Ingredients-order/assets/57155768/ebdfa420-9a1b-466c-b6d2-084348c8fc43)<br/><br/>
+
+<b>4. Waste</b><br/><br/>
+Select menu item ```Odpad```. In this section user can create ```bins``` for waste and manage them, like changing  ```status```, generating ```barcode``` or ```attaching/detaching```.
+All ```bins``` should have unique ```specific``` number in format ```00-00-00-000```. Click on ```Bin adding``` and in the window write ```unique``` bin's number, click ```Submit```. <br/><br/>
+![BinAdding](https://github.com/IhorZhylchuk/Ingredients-order/assets/57155768/0893ca7e-e849-413e-9deb-580883b17618) <br/><br/>
 
 
 
